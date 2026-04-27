@@ -68,6 +68,7 @@ import { CloudSyncView } from '@/components/ecu/cloud-sync-view'
 // Insights
 import { Topology3DView } from '@/components/ecu/topology-3d-view'
 import { TrendsView } from '@/components/ecu/trends-view'
+import { ServiceView } from '@/components/ecu/service-view'
 import { ServiceHistoryView } from '@/components/ecu/service-history-view'
 
 // Business
@@ -145,7 +146,7 @@ export default function Home() {
       // Insights
       case 'topology-3d': return <Topology3DView />
       case 'trends': return <TrendsView />
-      case 'service': return <ServiceHistoryView />
+      case 'service': return <ServiceView />
       case 'service-history': return <ServiceHistoryView />
 
       // Business
