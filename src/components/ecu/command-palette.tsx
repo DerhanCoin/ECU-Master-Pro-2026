@@ -105,25 +105,61 @@ const quickActions: QuickAction[] = [
 ]
 
 const navItems: NavItem[] = [
+  // Overview
   { id: 'nav-dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" />, view: 'dashboard' },
-  { id: 'nav-ai-predict', label: 'AI Predict', icon: <Zap className="h-4 w-4" />, view: 'ai-predict' },
-  { id: 'nav-live-data', label: 'Live Data', icon: <Activity className="h-4 w-4" />, view: 'live-data' },
-  { id: 'nav-dtc-scanner', label: 'DTC Scanner', icon: <AlertTriangle className="h-4 w-4" />, view: 'dtc-scan' },
   { id: 'nav-fleet', label: 'Fleet', icon: <Car className="h-4 w-4" />, view: 'fleet' },
   { id: 'nav-oem-scan', label: 'OEM Scan', icon: <Server className="h-4 w-4" />, view: 'oem-scan' },
-  { id: 'nav-auto-connect', label: 'Auto Connect', icon: <Radio className="h-4 w-4" />, view: 'connect' },
-  { id: 'nav-remote-diag', label: 'Remote Diag', icon: <Download className="h-4 w-4" />, view: 'remote-diag' },
-  { id: 'nav-remote-client', label: 'Remote Client', icon: <Globe className="h-4 w-4" />, view: 'remote-client' },
-  { id: 'nav-usb-obd', label: 'USB OBD', icon: <Usb className="h-4 w-4" />, view: 'usb-obd' },
-  { id: 'nav-web-diag', label: 'Web Diag', icon: <Globe className="h-4 w-4" />, view: 'web-diag' },
-  { id: 'nav-smartlink', label: 'SmartLink', icon: <Link2 className="h-4 w-4" />, view: 'smartlink' },
-  { id: 'nav-ai-diagnostics', label: 'AI Diagnostics', icon: <Cpu className="h-4 w-4" />, view: 'ai-diagnostics' },
+  { id: 'nav-ai-predictive', label: 'AI Predictive', icon: <Zap className="h-4 w-4" />, view: 'ai-predictive' },
+  { id: 'nav-autoconnect', label: 'AutoConnect', icon: <Radio className="h-4 w-4" />, view: 'autoconnect' },
+  { id: 'nav-realtime', label: 'Realtime', icon: <Activity className="h-4 w-4" />, view: 'realtime' },
+  // Connection
+  { id: 'nav-remote', label: 'Remote', icon: <Download className="h-4 w-4" />, view: 'remote' },
+  { id: 'nav-usb', label: 'USB', icon: <Usb className="h-4 w-4" />, view: 'usb' },
+  { id: 'nav-webserial', label: 'WebSerial', icon: <Globe className="h-4 w-4" />, view: 'webserial' },
+  { id: 'nav-vas6154', label: 'VAS 6154', icon: <Wifi className="h-4 w-4" />, view: 'vas6154' },
+  { id: 'nav-dongles', label: 'Dongles', icon: <Link2 className="h-4 w-4" />, view: 'dongles' },
+  // Diagnostics
+  { id: 'nav-diagnostics', label: 'Diagnostics', icon: <AlertTriangle className="h-4 w-4" />, view: 'diagnostics' },
+  { id: 'nav-pro-diagnostics', label: 'Pro Diagnostics', icon: <Search className="h-4 w-4" />, view: 'pro-diagnostics' },
+  { id: 'nav-ai', label: 'AI Diagnostics', icon: <Cpu className="h-4 w-4" />, view: 'ai' },
+  { id: 'nav-dtc-tool', label: 'DTC Tool', icon: <Code className="h-4 w-4" />, view: 'dtc-tool' },
+  { id: 'nav-adas', label: 'ADAS', icon: <Shield className="h-4 w-4" />, view: 'adas' },
+  { id: 'nav-vin-detect', label: 'VIN Detect', icon: <Search className="h-4 w-4" />, view: 'vin-detect' },
+  { id: 'nav-live-sensors', label: 'Live Sensors', icon: <Activity className="h-4 w-4" />, view: 'live-sensors' },
+  // Performance & Tuning
   { id: 'nav-performance', label: 'Performance', icon: <Gauge className="h-4 w-4" />, view: 'performance' },
-  { id: 'nav-canbus', label: 'CAN Bus', icon: <BusFront className="h-4 w-4" />, view: 'canbus' },
+  { id: 'nav-can', label: 'CAN Bus', icon: <BusFront className="h-4 w-4" />, view: 'can' },
+  { id: 'nav-tuning', label: 'Tuning', icon: <Zap className="h-4 w-4" />, view: 'tuning' },
+  { id: 'nav-map-editor', label: 'Map Editor', icon: <Gauge className="h-4 w-4" />, view: 'map-editor' },
+  { id: 'nav-data-logger', label: 'Data Logger', icon: <Calendar className="h-4 w-4" />, view: 'data-logger' },
+  // ECU & Flash
+  { id: 'nav-flash', label: 'Flash', icon: <Zap className="h-4 w-4" />, view: 'flash' },
+  { id: 'nav-ecu', label: 'ECU Info', icon: <Cpu className="h-4 w-4" />, view: 'ecu' },
+  { id: 'nav-advanced-ecu', label: 'Advanced ECU', icon: <Cpu className="h-4 w-4" />, view: 'advanced-ecu' },
+  { id: 'nav-advanced', label: 'Advanced', icon: <Settings className="h-4 w-4" />, view: 'advanced' },
+  { id: 'nav-flash-verify', label: 'Flash Verify', icon: <CheckCircle2 className="h-4 w-4" />, view: 'flash-verify' },
+  // Transmission & Protocols
+  { id: 'nav-transmission', label: 'Transmission', icon: <Car className="h-4 w-4" />, view: 'transmission' },
+  { id: 'nav-transmission-control', label: 'TCU Control', icon: <Gauge className="h-4 w-4" />, view: 'transmission-control' },
+  { id: 'nav-sgw', label: 'SGW', icon: <Shield className="h-4 w-4" />, view: 'sgw' },
+  { id: 'nav-j2534', label: 'J2534', icon: <Plug className="h-4 w-4" />, view: 'j2534' },
+  { id: 'nav-doip', label: 'DoIP', icon: <Globe className="h-4 w-4" />, view: 'doip' },
+  { id: 'nav-passthru', label: 'Passthru', icon: <Link2 className="h-4 w-4" />, view: 'passthru' },
+  // Network & EV
   { id: 'nav-network-analysis', label: 'Network Analysis', icon: <Shield className="h-4 w-4" />, view: 'network-analysis' },
-  { id: 'nav-ev-hybrid', label: 'EV/Hybrid', icon: <Plug className="h-4 w-4" />, view: 'ev-hybrid' },
+  { id: 'nav-ev', label: 'EV / Hybrid', icon: <Plug className="h-4 w-4" />, view: 'ev' },
+  // Tools & Data
+  { id: 'nav-tools', label: 'Tools', icon: <AlertTriangle className="h-4 w-4" />, view: 'tools' },
+  { id: 'nav-sensor-stream', label: 'Sensor Stream', icon: <Activity className="h-4 w-4" />, view: 'sensor-stream' },
+  { id: 'nav-vehicle-database', label: 'Vehicle Database', icon: <Server className="h-4 w-4" />, view: 'vehicle-database' },
+  { id: 'nav-reports', label: 'Reports', icon: <Calendar className="h-4 w-4" />, view: 'reports' },
+  { id: 'nav-tsb', label: 'TSB', icon: <Calendar className="h-4 w-4" />, view: 'tsb' },
+  { id: 'nav-cloud-sync', label: 'Cloud Sync', icon: <Globe className="h-4 w-4" />, view: 'cloud-sync' },
+  // Insights
+  { id: 'nav-topology-3d', label: '3D Topology', icon: <Server className="h-4 w-4" />, view: 'topology-3d' },
+  { id: 'nav-trends', label: 'Trends', icon: <Activity className="h-4 w-4" />, view: 'trends' },
   { id: 'nav-service', label: 'Service', icon: <Calendar className="h-4 w-4" />, view: 'service' },
-  { id: 'nav-settings', label: 'Settings', icon: <Settings className="h-4 w-4" />, view: 'settings' },
+  { id: 'nav-service-history', label: 'Service History', icon: <Calendar className="h-4 w-4" />, view: 'service-history' },
 ]
 
 const recentVehicles: RecentVehicle[] = [
@@ -184,17 +220,17 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
   const getQuickActionCallback = useCallback((id: string) => {
     switch (id) {
       case 'quick-scan':
-        return () => setActiveView('dtc-scan')
+        return () => setActiveView('dtc-tool')
       case 'connect-device':
         return () => setConnectModalOpen(true)
       case 'ai-analysis':
-        return () => setActiveView('ai-diagnostics')
+        return () => setActiveView('ai')
       case 'live-data':
-        return () => setActiveView('live-data')
+        return () => setActiveView('live-sensors')
       case 'service-history':
         return () => setActiveView('service')
       case 'open-settings':
-        return () => setActiveView('settings')
+        return () => setActiveView('advanced')
       default:
         return () => {}
     }
@@ -260,7 +296,7 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
                       key={dtc.code}
                       value={`dtc-${dtc.code}`}
                       onSelect={() => handleSelect(() => {
-                        setActiveView('dtc-scan')
+                        setActiveView('dtc-tool')
                       })}
                       className="mx-2 px-3 py-2.5 rounded-lg cursor-pointer text-[#e2e8f0] data-[selected=true]:bg-[#1e2a3a] data-[selected=true]:text-[#00d4ff] hover:bg-[#1e2a3a] flex items-center gap-3"
                     >

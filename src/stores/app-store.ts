@@ -1,6 +1,69 @@
 import { create } from 'zustand'
 
-export type ViewType = 'dashboard' | 'ai-predict' | 'live-data' | 'dtc-scan' | 'fleet' | 'oem-scan' | 'connect' | 'performance' | 'canbus' | 'ai-diagnostics' | 'ev-hybrid' | 'network-analysis' | 'service' | 'remote-diag' | 'remote-client' | 'usb-obd' | 'web-diag' | 'smartlink' | 'settings'
+export type ViewType =
+  // Overview
+  | 'dashboard'
+  | 'fleet'
+  | 'oem-scan'
+  | 'ai-predictive'
+  | 'autoconnect'
+  | 'realtime'
+  // Connection
+  | 'remote'
+  | 'usb'
+  | 'webserial'
+  | 'vas6154'
+  | 'dongles'
+  // Diagnostics
+  | 'diagnostics'
+  | 'pro-diagnostics'
+  | 'ai'
+  | 'adas'
+  | 'vin-detect'
+  | 'live-sensors'
+  | 'dtc-tool'
+  // Performance & Tuning
+  | 'performance'
+  | 'can'
+  | 'tuning'
+  | 'map-editor'
+  | 'data-logger'
+  // ECU & Flash
+  | 'flash'
+  | 'ecu'
+  | 'advanced-ecu'
+  | 'advanced'
+  | 'flash-verify'
+  // Transmission & Protocols
+  | 'transmission'
+  | 'transmission-control'
+  | 'sgw'
+  | 'j2534'
+  | 'doip'
+  | 'passthru'
+  // Network & EV
+  | 'network-analysis'
+  | 'ev'
+  // Tools & Data
+  | 'tools'
+  | 'sensor-stream'
+  | 'vehicle-database'
+  | 'reports'
+  | 'tsb'
+  | 'cloud-sync'
+  // Insights
+  | 'topology-3d'
+  | 'trends'
+  | 'service'
+  | 'service-history'
+  // Business
+  | 'training'
+  | 'shop'
+  | 'parts'
+  | 'workshop'
+  | 'workshop-portal'
+  | 'admin'
+  | 'license'
 
 export type NotificationCategory = 'dtc-alert' | 'maintenance' | 'ai-prediction' | 'system-update' | 'connection'
 
@@ -46,7 +109,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  activeView: 'ai-predict',
+  activeView: 'dashboard',
   activeTab: 'predictions',
   isConnectModalOpen: false,
   isCommandPaletteOpen: false,
