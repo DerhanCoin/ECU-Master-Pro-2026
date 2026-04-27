@@ -56,6 +56,14 @@ export type ViewType =
   | 'trends'
   | 'service'
   | 'service-history'
+  // SDV & Next-Gen
+  | 'sovd'
+  | 'ota'
+  | 'digital-twin'
+  | 'idps'
+  | 'v2x'
+  | 'sbom'
+  | 'compliance'
   // Business
   | 'training'
   | 'shop'
