@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
-  Wifi, Bluetooth, Usb, Ethernet, Cable, Search, ChevronDown, ChevronRight,
+  Wifi, Bluetooth, Usb, EthernetPort, Cable, Search, ChevronDown, ChevronRight,
   CheckCircle2, XCircle, AlertTriangle, Download, Cpu, Microchip, Shield,
   Zap, Activity, Car, Truck, Wrench, Ship, Bike, Factory, Globe2,
   X, ExternalLink, FileDown, MonitorSmartphone, Lock, Radio,
@@ -32,7 +32,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 }
 
 const CONNECTION_ICONS: Record<string, React.ElementType> = {
-  USB: Usb, WiFi: Wifi, Bluetooth: Bluetooth, Ethernet: Ethernet, LAN: Cable,
+  USB: Usb, WiFi: Wifi, Bluetooth: Bluetooth, Ethernet: EthernetPort, LAN: Cable,
 }
 
 const STATUS_STYLES = {
