@@ -148,12 +148,12 @@ export function ECUSidebar() {
         <NavSection title="Diagnostics" defaultOpen={true}>
           <NavItem icon={<AlertTriangle className="h-4 w-4" />} label="DTC Scanner" view="dtc-scan" />
           <NavItem icon={<Activity className="h-4 w-4" />} label="Diagnostics" view="diagnostics" />
-          <NavItem icon={<Cpu className="h-4 w-4" />} label="AI Diagnostics" badge="AI" badgeColor="purple" />
-          <NavItem icon={<Gauge className="h-4 w-4" />} label="Performance" />
-          <NavItem icon={<BusFront className="h-4 w-4" />} label="CAN Bus" />
-          <NavItem icon={<Shield className="h-4 w-4" />} label="Network Analysis" />
-          <NavItem icon={<Plug className="h-4 w-4" />} label="EV/Hybrid" />
-          <NavItem icon={<Calendar className="h-4 w-4" />} label="Service" />
+          <NavItem icon={<Cpu className="h-4 w-4" />} label="AI Diagnostics" view="ai-diagnostics" badge="AI" badgeColor="purple" />
+          <NavItem icon={<Gauge className="h-4 w-4" />} label="Performance" view="performance" />
+          <NavItem icon={<BusFront className="h-4 w-4" />} label="CAN Bus" view="canbus" />
+          <NavItem icon={<Shield className="h-4 w-4" />} label="Network Analysis" view="network-analysis" />
+          <NavItem icon={<Plug className="h-4 w-4" />} label="EV/Hybrid" view="ev-hybrid" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Calendar className="h-4 w-4" />} label="Service" view="service" />
         </NavSection>
       </ScrollArea>
 

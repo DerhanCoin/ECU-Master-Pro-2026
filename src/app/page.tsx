@@ -8,8 +8,14 @@ import { DashboardView } from '@/components/ecu/dashboard-view'
 import { LiveDataView } from '@/components/ecu/live-data-view'
 import { DTCScanView } from '@/components/ecu/dtc-scan-view'
 import { FleetView } from '@/components/ecu/fleet-view'
+import { AIDiagnosticsView } from '@/components/ecu/ai-diagnostics-view'
+import { CANBusView } from '@/components/ecu/canbus-view'
+import { PerformanceView } from '@/components/ecu/performance-view'
+import { EVHybridView } from '@/components/ecu/ev-hybrid-view'
+import { NetworkAnalysisView } from '@/components/ecu/network-analysis-view'
+import { ServiceHistoryView } from '@/components/ecu/service-history-view'
 import { useAppStore } from '@/stores/app-store'
-import { Wifi, Server } from 'lucide-react'
+import { Wifi, Server, Radio, Wrench, Download, Usb, Globe, Link2 } from 'lucide-react'
 
 export default function Home() {
   const { activeView } = useAppStore()
@@ -44,6 +50,18 @@ export default function Home() {
         )
       case 'diagnostics':
         return <DTCScanView />
+      case 'ai-diagnostics':
+        return <AIDiagnosticsView />
+      case 'canbus':
+        return <CANBusView />
+      case 'performance':
+        return <PerformanceView />
+      case 'ev-hybrid':
+        return <EVHybridView />
+      case 'network-analysis':
+        return <NetworkAnalysisView />
+      case 'service':
+        return <ServiceHistoryView />
       default:
         return <AIPredictiveView />
     }

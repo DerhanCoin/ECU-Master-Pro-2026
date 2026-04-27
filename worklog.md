@@ -221,3 +221,303 @@ Stage Summary:
 - 5 content tabs in AI Predictive page (Predictions, Schedule, Analytics, Alerts, Digital Twin)
 - Backend API route for AI analysis (simulated)
 - Zero lint errors, all pages compiling
+
+---
+Task ID: 2
+Agent: Component Builder
+Task: Create CAN Bus Monitor View component
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available shadcn/ui components
+- Created CAN Bus Monitor View (`src/components/ecu/canbus-view.tsx`):
+  - Page header with BusFront icon, "CAN Bus Monitor" title, "Real-time CAN bus traffic analysis and protocol decoding" subtitle
+  - Pulsing "Live" indicator with green dot when capture is active
+  - Start Capture / Stop Capture toggle button (teal when starting, red when stopping)
+  - Bus Status Bar with 4 inline metrics:
+    - Bus Load: 34% with animated progress bar (green under 60%, yellow 60-80%, red above 80%)
+    - Messages/sec: 1,247 with Activity icon
+    - Errors: 0 (green) or count (red) with AlertCircle icon
+    - Protocol: ISO 15765-4 (CAN) with Radio icon
+  - Filter Controls Row:
+    - Search Input for CAN ID filtering with Search icon
+    - Protocol dropdown: All, CAN 2.0A, CAN 2.0B, ISO-TP, UDS
+    - Direction dropdown: All, RX, TX
+    - "Clear Buffer" button with RotateCcw icon
+  - Message Traffic Table (scrollable, max-h-96):
+    - Columns: Time, CAN ID, DLC, Data (hex), Protocol, Direction
+    - Simulated CAN messages streaming when capture is active (useEffect + setInterval at 200ms)
+    - Realistic CAN IDs (0x0C0, 0x1A2, 0x3E8, 0x100, 0x7DF, 0x7E0, 0x7E8, etc.)
+    - Color-coded directions: RX in teal (#00d4ff), TX in purple (#a855f7)
+    - Monospace font for hex data with tracking-wider
+    - Auto-scroll to bottom with checkbox toggle
+    - Message count badge indicator
+    - Footer with filtered count, total count, RX/TX direction counts
+    - Empty state with BusFront icon when not capturing
+  - Decoded Signals Panel (right side on xl screens, below on smaller):
+    - 8 decoded signal cards from CAN messages:
+      - Engine RPM: 3,240 rpm (from 0x0C0) - teal color
+      - Vehicle Speed: 87 km/h (from 0x0C0) - green color
+      - Coolant Temp: 89°C (from 0x0C0) - yellow color
+      - Throttle Position: 34% (from 0x1A2) - purple color
+      - Fuel Level: 72% (from 0x3E8) - cyan color
+      - Brake Pressure: 0 bar (from 0x1A2) - red color
+      - Steering Angle: 0° (from 0x0C0) - purple color
+      - Door Status: Closed (from 0x3E8) - green color
+    - Each card: signal name, decoded value with unit, source CAN ID, timestamp, color-coded value, icon
+    - Scrollable with max-h-[432px]
+  - Bus Statistics Section with 4 stat cards:
+    - Total Messages (counting up) - Hash icon, teal background
+    - Error Frames (0 = green, >0 = red) - AlertTriangle icon, red background
+    - Remote Frames: 12 - Radio icon, yellow background
+    - Overruns (0 = green, >0 = red) - Zap icon, purple background
+- Updated app store (`src/stores/app-store.ts`) to add 'canbus' to ViewType union
+- Updated sidebar (`src/components/ecu/sidebar.tsx`) to wire CAN Bus nav item to 'canbus' view
+- Updated page.tsx to import CANBusView and render it for 'canbus' route
+- Component uses 'use client' directive and named export CANBusView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Proper TypeScript types for CANMessage, DecodedSignal, filters
+- Messages array limited to 200 entries
+- Realistic simulation with 1-3 messages per 200ms tick, bus load variation, rare error generation
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- CAN Bus Monitor View fully implemented with all 6 required sections
+- Real-time simulated CAN traffic with protocol decoding
+- Integrated into app navigation via sidebar CAN Bus item
+- Zero lint errors, dev server compiling successfully
+
+---
+Task ID: 1
+Agent: Component Builder
+Task: Build ECU Performance/Tuning View component
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created PerformanceView component (`src/components/ecu/performance-view.tsx`):
+  - Page Header: Gauge icon, "Performance Tuning" title, subtitle, teal "Read ECU" button with loading animation
+  - Performance Metrics Row: 4 MetricCard components (Horsepower: 247 HP, Torque: 385 Nm, Boost Pressure: 1.2 bar, RPM Limit: 6,800)
+  - Tuning Profiles Section: 3 profile cards (Stock OEM, Stage 1 Street, Stage 2 Race)
+    - Each card shows: profile name, description, power gains (+0/+45/+82 HP), risk level (Low/Medium/High)
+    - Active profile has teal border with glow effect and "ACTIVE" badge
+    - Apply/Active buttons with proper states
+  - Live Engine Parameters: 6 parameter cards in responsive grid
+    - RPM (3,240/6,800), Boost (1.2/2.0 bar), Air/Fuel Ratio (14.7:1), Ignition Timing (18° BTDC), Intake Temp (42°C), Throttle Position (34%)
+    - Color-coded progress bars with gradients (green/yellow/red status)
+    - Status indicator dots with glow effect
+  - Performance Graphs: Two CSS bar charts side-by-side
+    - Power Band: HP across RPM 1000-7000 with teal gradient bars
+    - Torque Curve: Nm across RPM 1000-7000 with green gradient bars
+    - Each bar shows numeric value above, RPM label below
+  - ECU Parameters Table: 6 rows with columns (Parameter, Current, Stock, Modified, Status)
+    - Rows: Rev Limiter, Boost Target, Fuel Injection, Ignition Advance, Idle Speed, Speed Limiter
+    - Status badges: Modified (teal), Stock (gray), Warning (yellow) with icons
+    - "Save to ECU" teal button with success feedback
+    - "Reset to Stock" red outline button with animation feedback
+    - Modified parameter count summary
+- Updated app-store.ts: Added 'performance' to ViewType union
+- Updated sidebar.tsx: Added view="performance" to Performance nav item
+- Updated page.tsx: Added PerformanceView import and case in switch
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses useState for activeProfile, isReading, showSaveSuccess, showResetConfirm
+- Uses lucide-react icons: Gauge, Zap, ArrowUp, TrendingUp, Settings, Save, RotateCcw, CheckCircle2, AlertTriangle, Shield, Flame, Thermometer, Wind, Timer, Cpu
+- Uses shadcn/ui Badge and Button components
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling and rendering
+
+Stage Summary:
+- PerformanceView component created with all 6 required sections
+- Full integration with existing app navigation (sidebar → page.tsx → component)
+- Interactive states: profile switching, ECU reading simulation, save/reset feedback
+- Responsive grid layouts for all sections
+- No API calls, all mock/simulated data
+
+---
+Task ID: 4
+Agent: Component Builder
+Task: Build AI Diagnostics View component for ECU Master Pro 2026
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created AI Diagnostics View (`src/components/ecu/ai-diagnostics-view.tsx`):
+  - Page Header: Brain icon, "AI Diagnostics" title, purple "AI" badge, "Intelligent fault detection and automated repair suggestions" subtitle, "Run AI Analysis" teal button with 3s simulated loading state
+  - Analysis Progress Bar: Purple animated progress with percentage during analysis run
+  - AI Analysis Summary (appears after analysis):
+    - Overall Health Score: 82/100 with large SVG circular indicator (green for 80+, yellow 60+, red below)
+    - 4 metric cards: Critical Issues (2, red), Warnings (5, yellow), Resolved (12, green), Confidence (96.3%, purple)
+  - AI-Powered Fault Detection (main section):
+    - 3 expandable fault cards:
+      a. "Catalytic Converter Efficiency Below Threshold" - CRITICAL, 94% probability, 97% AI confidence
+      b. "Transmission Slippage Detected" - WARNING, 78% probability, 91% AI confidence
+      c. "Battery Management System Communication Intermittent" - WARNING, 65% probability, 84% AI confidence
+    - Each fault card expands to show: Probability/Confidence bars, Root Cause, Affected Components (badge chips), Recommended Action, Estimated Cost (DollarSign icon), Urgency (Clock icon)
+    - Collapsed view shows: title + severity dot + severity badge + probability percentage
+  - AI Model Status Panel:
+    - Model: Transformer-XL Ensemble v3.2
+    - Training Data: 12.4M diagnostic records
+    - Last Updated: 2 hours ago
+    - Accuracy: 96.3% (green)
+    - Active Inference: Yes (green pulsing dot)
+    - Model loading progress bar with Ready/Loading state
+  - Repair Suggestion Timeline:
+    - 5 priority-ordered repair items: Week 1 (Critical), Week 2 (High), Week 3 (Medium), Month 2 (Scheduled), Month 3 (Routine)
+    - Timeline visual with dots, connecting lines, and ArrowRight separators
+    - Each item: priority badge (color-coded), cost estimate (DollarSign), checkbox to mark as scheduled
+    - Checkbox toggles "Scheduled" / "Mark as scheduled" text
+  - Learning & Adaptation Panel:
+    - "AI has learned 47 new patterns" banner with Brain icon and purple accent
+    - Knowledge base coverage: VW Group 94%, BMW 89%, Mercedes 91% (progress bars with brand-specific colors)
+    - 3 Recent Insights with type badges:
+      - Pattern (purple/Lightbulb): "Short trips causing DPF regeneration issues"
+      - Trend (teal/TrendingUp): "Battery voltage declining 0.1V/month"
+      - Anomaly (red/AlertTriangle): "Unusual CAN message frequency on ID 0x3E8"
+- Updated app store (`src/stores/app-store.ts`): Added 'ai-diagnostics' to ViewType union
+- Updated sidebar (`src/components/ecu/sidebar.tsx`): Added view="ai-diagnostics" to AI Diagnostics nav item
+- Updated page.tsx: Added AIDiagnosticsView import and 'ai-diagnostics' case in switch
+- Component uses 'use client' directive and named export AIDiagnosticsView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff, #8b5cf6 for AI)
+- Uses useState for isAnalyzing, analysisComplete, analysisProgress, scheduledRepairs, modelProgress
+- Uses lucide-react icons: Cpu, Brain, AlertTriangle, CheckCircle2, Clock, DollarSign, TrendingUp, Lightbulb, Wrench, ChevronDown, ChevronRight, Zap, Activity, Target, BarChart3, Shield, ArrowRight
+- Uses shadcn/ui Badge, Button, Progress, Checkbox components
+- Responsive grid layout: 3-column on lg (2:1), scrollable fault list with max-h-500px
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling and rendering
+
+Stage Summary:
+- AIDiagnosticsView component created with all 6 required sections
+- Full integration with existing app navigation (sidebar → page.tsx → component)
+- Interactive states: analysis simulation with progress, expandable fault cards, checkbox scheduling
+- Custom SVG circular health score indicator
+- Responsive grid layout with scrollable content areas
+- No API calls, all mock/simulated data as specified
+
+---
+Task ID: 3
+Agent: Component Builder
+Task: Create EV/Hybrid Diagnostics View component
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created EV/Hybrid Diagnostics View (`src/components/ecu/ev-hybrid-view.tsx`):
+  - Page Header: Plug icon, "EV/Hybrid Diagnostics" title, "Electric vehicle battery management and hybrid system analysis" subtitle, "Connect BMS" teal button with toggle state
+  - BMS Connected badge appears when toggled on
+  - Battery Pack Overview (large card):
+    - 96-cell pack visualization as 8x12 grid of small rectangles
+    - Each cell colored by voltage: green (#10b981) for 3.6-4.2V, yellow (#f59e0b) for 3.4-3.6V, red (#ef4444) for below 3.4V
+    - Most cells green (91), 3 yellow (cells #23, #58, #71), 1 red (cell #47)
+    - Hover tooltip showing cell number and voltage
+    - Cell status legend with counts
+    - Summary stats: Pack Voltage 384.2V, Pack Current 12.4A, State of Health 94%, Temperature range 24°C-31°C (avg 27°C)
+    - Large SOC (78%) circular progress indicator using SVG with teal color
+  - Key Metrics Row (4 cards):
+    - Range: 312 km (estimated) - Car icon, #00d4ff
+    - Energy: 62.4 kWh (capacity 80 kWh) - Zap icon, #10b981
+    - Charging Rate: 7.2 kW (Level 2) - BatteryCharging icon, #f59e0b
+    - Cell Delta: 28 mV (imbalance) - Gauge icon, #8b5cf6
+  - Charging Analysis Section (2-column grid):
+    - Left: Charging session info with Not Charging status badge, last session stats (45 min, 32 kWh, $4.80)
+    - CSS bar chart for fast charge curve (0-80%) with 8 data points showing power tapering
+    - Right: Charge history table (3 sessions) with Date, Duration, Energy, Cost, Type columns
+    - Type badges: DC Fast (teal), AC Level 2 (green), AC Level 1 (gray)
+    - Summary footer: total sessions, total energy (154 kWh), total cost ($19.90)
+  - Motor & Inverter Section (2-column grid):
+    - Motor: RPM 4,200, Power 134 kW, Torque 290 Nm, Efficiency 95.2%, Temp 68°C - all normal (green)
+    - Inverter: DC Voltage 384V, AC Output 380V, Switching Freq 10 kHz, Efficiency 97.8%, IGBT Temp 52°C - all normal
+    - Color-coded status dots for each metric
+  - Hybrid System Section (2-column grid):
+    - Drive Mode toggle: EV Only, Hybrid, Sport, Charge buttons with active state styling
+    - Power Distribution: Engine 45% (yellow bar), Electric Motor 55% (green bar) with progress bars
+    - Regenerative Braking stats: Last 24h recovered 4.2 kWh, Efficiency 89%
+    - Energy Flow Diagram (CSS): Battery ↔ Motor ↔ Wheels, Engine → Wheels
+    - Each component box with icon, label, and value
+    - Directional arrows with power type labels (DC, AC, Mech)
+    - Regen Active indicator
+    - Mode description text changes based on selected mode
+  - Alerts & Warnings:
+    - Cell #47 voltage deviation detected (WARNING, yellow) - AlertTriangle icon
+    - Battery cooling system optimal (OK, green) - CheckCircle2 icon
+    - Charger communication: Ready (INFO, blue) - Info icon
+    - Each with icon, message, severity badge, and timestamp
+- Component uses 'use client' directive and named export EVHybridView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses lucide-react icons: Plug, Zap, Battery, BatteryCharging, Thermometer, Car, RotateCcw, AlertTriangle, CheckCircle2, plus Gauge, Cpu, Clock, Info, ArrowRight, ArrowLeftRight, CircleDot
+- Uses shadcn/ui Badge and Button components
+- Responsive grid layout with scrollable sections
+- Frontend-only component with mock/simulated data, no API calls
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- EVHybridView component created with all 7 required sections
+- Full battery pack visualization with 96-cell grid, hover tooltips, and color-coded voltage mapping
+- Circular SVG progress for SOC display
+- CSS-based charging curve visualization
+- Interactive hybrid mode toggle with energy flow diagram
+- Comprehensive alerts section with severity badges
+- Ready for integration into page.tsx sidebar navigation
+
+---
+Task ID: 6
+Agent: Component Builder
+Task: Create Service History View component for ECU Master Pro 2026
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created Service History View (`src/components/ecu/service-history-view.tsx`):
+  - Page Header: Calendar icon, "Service History" title, "Maintenance records and service interval tracking" subtitle, teal "Add Service Record" button toggling collapsible form
+  - Service Overview (4 metric cards):
+    - Total Services: 24 (Wrench icon, teal)
+    - This Year: 7 (Calendar icon, green)
+    - Total Cost: €4,280 (DollarSign icon, purple)
+    - Next Service: In 12 days (Clock icon, yellow/amber)
+  - Add Service Record Form (collapsible, shown when button clicked):
+    - Fields: Vehicle (dropdown with 5 options), Service Type (dropdown: Oil Change, Brake Service, Tire Service, Battery, Inspection, Other), Date (date input), Mileage (text input), Cost (text input), Notes (text input)
+    - "Save Record" teal button with CheckCircle2 icon and "Cancel" button
+    - Inline form validation with red error messages for required fields
+    - Saving adds new record to top of table with "Scheduled" status
+    - Cancel resets form and hides it
+  - Upcoming Service Intervals (timeline style):
+    - Visual timeline with colored dots and connecting line on left side
+    - 5 upcoming services with urgency badges:
+      - Oil Change: Due at 45,200 km (1,200 km / 12 days) - Due Soon (yellow warning)
+      - Brake Inspection: Due at 48,000 km (4,000 km / 6 weeks) - Upcoming (teal)
+      - Tire Rotation: Due at 50,000 km (6,000 km / 8 weeks) - Upcoming (teal)
+      - Air Filter: Due at 52,000 km (8,000 km / 10 weeks) - Upcoming (teal)
+      - Timing Belt: Due at 60,000 km (16,000 km / 5 months) - Planned (blue info)
+    - Each with: service name, due mileage, remaining km, urgency badge (Due Soon/Upcoming/Planned), progress bar with % completed and glow effect
+  - Service Records Table (scrollable, max-h-96 with custom scrollbar):
+    - Columns: Date, Vehicle, Service Type, Mileage, Cost, Status, Mechanic
+    - 8 sample records as specified (VW Golf GTI, Audi A4, BMW 3 Series, Mercedes C-Class, Skoda Octavia)
+    - Status badges: Completed (green with CheckCircle2), Scheduled (teal with Clock), Overdue (red with AlertTriangle)
+    - Vehicle column with Car icon
+    - Filter dropdowns: Vehicle filter and Service Type filter with "All" default
+    - Record count badge
+    - Empty state when no records match filters
+  - Cost Analysis (bottom section, 2-column grid):
+    - Left: Year-to-Date Cost Breakdown by category (CSS bar chart):
+      - Oil Changes: €230 (5%), Brakes: €450 (10%), Tires: €380 (8%), Battery: €180 (4%), Transmission: €650 (15%), Inspection: €280 (6%), Other: €110 (3%)
+      - Each with colored progress bars and glow effects
+      - Total YTD footer: €2,280 in teal
+    - Right: Monthly Cost Trend (12 mini CSS bars):
+      - Jan through Dec with varying heights
+      - Gradient teal bars with cost labels above
+      - Month abbreviations below
+- Component uses 'use client' directive and named export ServiceHistoryView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses useState for showForm, formData, formErrors, vehicleFilter, serviceFilter, records
+- Uses lucide-react icons: Calendar, Plus, Clock, DollarSign, Car, Wrench, CheckCircle2, AlertTriangle, Filter, ChevronDown, ChevronUp, X
+- Uses shadcn/ui Badge, Button, Input, Select, Table, Label components
+- Responsive grid layout (1/2/3/4 columns at breakpoints)
+- Frontend-only component with mock/simulated data, no API calls
+- No modifications to app store, sidebar, or page.tsx (integration handled by another agent)
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- ServiceHistoryView component created with all 6 required sections
+- Page header with collapsible add-record form
+- 4 service overview metric cards
+- Timeline-style upcoming service intervals with urgency badges and progress bars
+- Scrollable service records table with status badges and vehicle/type filters
+- Cost analysis with CSS bar charts (category breakdown + monthly trend)
+- Ready for integration into page.tsx sidebar navigation
