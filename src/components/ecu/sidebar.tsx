@@ -136,11 +136,11 @@ export function ECUSidebar() {
 
         <NavSection title="Connection" defaultOpen={true}>
           <NavItem icon={<Radio className="h-4 w-4" />} label="Auto Connect" view="connect" />
-          <NavItem icon={<Wrench className="h-4 w-4" />} label="Remote Diag" badge="NEW" badgeColor="teal" />
-          <NavItem icon={<Download className="h-4 w-4" />} label="Remote Client" badge="NEW" badgeColor="teal" />
-          <NavItem icon={<Usb className="h-4 w-4" />} label="USB OBD" badge="NEW" badgeColor="teal" />
-          <NavItem icon={<Globe className="h-4 w-4" />} label="Web Diag" badge="NEW" badgeColor="teal" />
-          <NavItem icon={<Link2 className="h-4 w-4" />} label="SmartLink" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Wrench className="h-4 w-4" />} label="Remote Diag" view="remote-diag" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Download className="h-4 w-4" />} label="Remote Client" view="connect" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Usb className="h-4 w-4" />} label="USB OBD" view="connect" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Globe className="h-4 w-4" />} label="Web Diag" view="connect" badge="NEW" badgeColor="teal" />
+          <NavItem icon={<Link2 className="h-4 w-4" />} label="SmartLink" view="connect" badge="NEW" badgeColor="teal" />
         </NavSection>
 
         <Separator className="bg-[#1e2a3a] my-1" />
@@ -154,6 +154,7 @@ export function ECUSidebar() {
           <NavItem icon={<Shield className="h-4 w-4" />} label="Network Analysis" view="network-analysis" />
           <NavItem icon={<Plug className="h-4 w-4" />} label="EV/Hybrid" view="ev-hybrid" badge="NEW" badgeColor="teal" />
           <NavItem icon={<Calendar className="h-4 w-4" />} label="Service" view="service" />
+          <NavItem icon={<Settings className="h-4 w-4" />} label="Settings" view="settings" />
         </NavSection>
       </ScrollArea>
 

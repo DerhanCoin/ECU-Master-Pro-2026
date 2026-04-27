@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type ViewType = 'dashboard' | 'ai-predict' | 'live-data' | 'dtc-scan' | 'fleet' | 'oem-scan' | 'diagnostics' | 'connect' | 'performance' | 'canbus' | 'ai-diagnostics' | 'ev-hybrid' | 'network-analysis' | 'service'
+export type ViewType = 'dashboard' | 'ai-predict' | 'live-data' | 'dtc-scan' | 'fleet' | 'oem-scan' | 'diagnostics' | 'connect' | 'performance' | 'canbus' | 'ai-diagnostics' | 'ev-hybrid' | 'network-analysis' | 'service' | 'remote-diag' | 'settings'
 
 interface AppState {
   activeView: ViewType

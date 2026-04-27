@@ -14,8 +14,11 @@ import { PerformanceView } from '@/components/ecu/performance-view'
 import { EVHybridView } from '@/components/ecu/ev-hybrid-view'
 import { NetworkAnalysisView } from '@/components/ecu/network-analysis-view'
 import { ServiceHistoryView } from '@/components/ecu/service-history-view'
+import { AutoConnectView } from '@/components/ecu/auto-connect-view'
+import { OEMScanView } from '@/components/ecu/oem-scan-view'
+import { RemoteDiagView } from '@/components/ecu/remote-diag-view'
+import { SettingsView } from '@/components/ecu/settings-view'
 import { useAppStore } from '@/stores/app-store'
-import { Wifi, Server, Radio, Wrench, Download, Usb, Globe, Link2 } from 'lucide-react'
 
 export default function Home() {
   const { activeView } = useAppStore()
@@ -33,21 +36,9 @@ export default function Home() {
       case 'fleet':
         return <FleetView />
       case 'connect':
-        return (
-          <PlaceholderView
-            title="Auto Connect"
-            icon={<Wifi className="h-12 w-12 text-[#00d4ff]" />}
-            description="Automatically detect and connect to available diagnostic devices nearby."
-          />
-        )
+        return <AutoConnectView />
       case 'oem-scan':
-        return (
-          <PlaceholderView
-            title="OEM Scan"
-            icon={<Server className="h-12 w-12 text-[#00d4ff]" />}
-            description="Manufacturer-specific diagnostic protocols and deep ECU access."
-          />
-        )
+        return <OEMScanView />
       case 'diagnostics':
         return <DTCScanView />
       case 'ai-diagnostics':
@@ -62,6 +53,10 @@ export default function Home() {
         return <NetworkAnalysisView />
       case 'service':
         return <ServiceHistoryView />
+      case 'remote-diag':
+        return <RemoteDiagView />
+      case 'settings':
+        return <SettingsView />
       default:
         return <AIPredictiveView />
     }
@@ -85,18 +80,6 @@ export default function Home() {
 
       {/* Connect device modal */}
       <ConnectDeviceModal />
-    </div>
-  )
-}
-
-function PlaceholderView({ title, icon, description }: { title: string; icon: React.ReactNode; description: string }) {
-  return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="text-center">
-        <div className="mb-4 flex justify-center">{icon}</div>
-        <h2 className="text-lg font-semibold text-[#e2e8f0] mb-2">{title}</h2>
-        <p className="text-xs text-[#64748b] max-w-sm">{description}</p>
-      </div>
     </div>
   )
 }

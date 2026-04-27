@@ -521,3 +521,220 @@ Stage Summary:
 - Scrollable service records table with status badges and vehicle/type filters
 - Cost analysis with CSS bar charts (category breakdown + monthly trend)
 - Ready for integration into page.tsx sidebar navigation
+
+---
+Task ID: 11
+Agent: Component Builder
+Task: Build OEM Scan View component for ECU Master Pro 2026
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created OEM Scan View (`src/components/ecu/oem-scan-view.tsx`):
+  - Page Header: Server icon, "OEM Scan" title, "Manufacturer-specific diagnostic protocols and deep ECU access" subtitle, "Start OEM Scan" teal button (disabled until brand selected)
+  - Brand Selection Grid (2x3 responsive grid of brand cards):
+    - Volkswagen Group (VW, Audi, Skoda, Seat, Cupra, Porsche) - Teal #00d4ff, 1,247 vehicles
+    - BMW Group (BMW, Mini) - Blue #3b82f6, 834 vehicles
+    - Mercedes-Benz (Mercedes, AMG, Smart) - Silver #94a3b8, 623 vehicles
+    - Stellantis (Fiat, Alfa Romeo, Peugeot, Citroën, Opel) - Yellow #f59e0b, 456 vehicles
+    - Ford Group (Ford, Lincoln) - Blue #2563eb, 389 vehicles
+    - Toyota Group (Toyota, Lexus, Daihatsu) - Red #ef4444, 567 vehicles
+    - Each card: colored circle logo placeholder with first letter, brand name, sub-brand badges, vehicle count badge, "SELECT"/"SELECTED" button
+    - Selected brand gets bright accent-colored border with glow shadow effect
+  - Protocol Info Panel (shown after brand selection):
+    - Brand logo and name with accent color
+    - Available protocols displayed as accent-colored badges (DoIP, UDS, KWP2000, etc.)
+    - Supported ECUs displayed as gray badges
+    - Security access info with Unlock and Shield icons
+    - "Scan ECU Modules" teal button
+  - ECU Module Scan (triggered by scan button):
+    - Progress bar scanning 10 modules over 5 seconds (500ms per module)
+    - Protocol indicator in progress bar text
+    - Module discovery counter during scan
+    - 10 VW Group ECU modules:
+      - Engine ECU 1.8T (Bosch MED17.5) - Read OK, 32 bytes
+      - Transmission DSG7 (Bosch DSG) - Read OK, 24 bytes
+      - ABS/ESP (Continental MK100) - Read OK, 16 bytes
+      - Airbag (Autoliv) - Read OK, 8 bytes
+      - BCM (Hella) - Read OK, 48 bytes
+      - Instrument Cluster (VDO) - Read OK, 20 bytes
+      - Infotainment MIB3 (Panasonic) - Read OK, 64 bytes
+      - ADAS Front Radar (Continental) - Access Denied (red, Lock icon), 40 bytes
+      - Park Assist (Hella) - Read OK, 12 bytes
+      - Keyless Entry (Marquardt) - Read OK, 8 bytes
+    - Each module card: Cpu icon, module name, supplier, status (OK=green/Denied=red/Pending=yellow), coding bytes count
+    - "Access Denied" modules shown with red border tint and Lock icon
+    - Scan complete message with denied module count warning
+  - OEM Coding Panel (expanded by clicking a module):
+    - Collapsible header with ChevronDown, module name, supplier, status badge
+    - Module details grid (2x2 to 4 columns): Software version, Hardware version, Part number, Coding bytes
+    - Coding hex value in monospace font with teal color
+    - "Read Coding" button with loading spinner simulation
+    - "Write Coding" button with confirmation flow (Confirm/Cancel)
+    - Write success feedback state
+    - Adaptive values section with dot indicators
+    - "Reset Adaptations" button with loading spinner and success feedback
+    - All coding/write/reset buttons disabled for "Access Denied" modules
+  - Security Access Section:
+    - Level 1 (Basic): Unlocked, green Unlock icon, green badge, read-only access description
+    - Level 2 (Extended): Locked, Lock icon, requires seed-key authentication, "Request Access" amber button with loading state
+    - Level 3 (Full): Locked, Lock icon, requires OEM credentials, "Request Access" red button with loading state
+    - Each level card with icon, name, description, requirement info, and lock/unlock status badge
+- Component uses 'use client' directive and named export OEMScanView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Brand-specific accent colors: VW=#00d4ff, BMW=#3b82f6, Mercedes=#94a3b8, Stellantis=#f59e0b, Ford=#2563eb, Toyota=#ef4444
+- Uses useState for: selectedBrand, scanState (idle/scanning/complete), scanProgress, discoveredModules (Set), selectedModule, expandedModule, showWriteConfirm, writeSuccess, readLoading, resetLoading, resetSuccess, accessRequesting
+- Uses lucide-react icons: Server, Shield, Lock, Unlock, Car, Cpu, Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown, ChevronRight
+- Uses shadcn/ui Badge, Button, Progress components
+- Responsive grid layout (1/2/3 columns at breakpoints)
+- Frontend-only component with mock/simulated data, no API calls
+- No modifications to app store, sidebar, or page.tsx (integration handled by another agent)
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- OEMScanView component created with all 6 required sections
+- Brand selection grid with 6 manufacturers and brand-specific accent colors
+- Protocol info panel with dynamic data based on selected brand
+- Simulated ECU scan with 10 modules, progressive discovery, and access denied handling
+- Expandable OEM coding panel with read/write/reset functionality and confirmation flows
+- Security access levels with unlock/lock states and request buttons
+- Ready for integration into page.tsx sidebar navigation
+
+---
+Task ID: 10
+Agent: Component Builder
+Task: Create Auto Connect View component for ECU Master Pro 2026
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available shadcn/ui components
+- Created Auto Connect View (`src/components/ecu/auto-connect-view.tsx`):
+  - Page Header: Radio icon, "Auto Connect" title, "Automatically detect and connect to diagnostic devices" subtitle, teal "Start Scan" button
+  - Connected indicator with green pulsing dot when device is connected
+  - Scan Animation (shown during scan):
+    - Animated radar-style pulse circles (3 concentric circles with CSS @keyframes radar-pulse animation, staggered delays: 0s, 0.5s, 1s)
+    - Center icon with Radio and pulse animation
+    - "Scanning for devices..." text with animated dots (1-3 dots cycling at 500ms)
+    - Scan progress bar: 0-100% over 4 seconds with teal color and glow effect
+    - Cancel button (red outline with XCircle icon)
+  - Discovered Devices List (appears after scan completes, 4 devices):
+    - VAS 6154 (VW Group) - Signal: Strong (4 bars, green), Protocol: DOIP, Status: Available - Connect button
+    - Bosch KTS 560 (Bosch) - Signal: Good (3 bars, yellow), Protocol: SAE J2534, Status: Available - Connect button
+    - ELM327 WiFi (ELM Electronics) - Signal: Weak (1 bar, red), Protocol: OBD-II, Status: Available - Connect button
+    - Daimler Xentry Kit (Daimler AG) - Signal: Good (3 bars, yellow), Protocol: CAN/DoIP, Status: In Use - grayed out with "Unavailable" button
+    - Each device card: Wifi icon, device name, manufacturer, signal bars (4 small bars with glow), protocol badge (purple), status indicator, connect/unavailable button
+    - Signal bars colored: green (#10b981) for Strong, yellow (#f59e0b) for Good, red (#ef4444) for Weak
+    - "Connect" button triggers 2s connecting animation (spinning Activity icon + "Connecting...") then shows Connection Status Card
+  - Connection Status Card (shown when connected):
+    - Green border glow effect with CheckCircle2 header
+    - Device name and manufacturer with "CONNECTED" badge
+    - 4-column detail grid:
+      - Connection Type: WiFi/USB/Bluetooth with appropriate icon
+      - Protocol: ISO 15765-4 / SAE J2534 with Radio icon
+      - Connected For: timer counting up (MM:SS format) with Clock icon
+      - Latency: 12ms with animated Activity icon and pinging dot
+    - "Disconnect" button (red outline with XCircle icon)
+  - Connection History (3 recent connections):
+    - VAS 6154 - 2 hours ago - Duration: 45 min - 247 parameters read
+    - ELM327 WiFi - Yesterday - Duration: 12 min - 84 parameters read
+    - Bosch KTS 560 - 3 days ago - Duration: 1h 20min - 523 parameters read
+    - Each with Wifi icon, device name, timestamp, duration, and parameter count badge
+  - Quick Connect Tips (3 tip cards at bottom):
+    - "USB connections provide the most stable data stream" - Usb icon
+    - "WiFi adapters support longer range diagnostics" - Wifi icon
+    - "Keep device firmware updated for best compatibility" - RefreshCw icon
+- Component uses 'use client' directive and named export AutoConnectView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses useState for isScanning, scanProgress, discoveredDevices, connectedDevice, connectingDeviceId, connectionTimer, animatedDots, scanComplete
+- Uses useEffect for scan progress animation, connection timer, and cleanup
+- Uses lucide-react icons: Radio, Wifi, Usb, Bluetooth, Signal, CheckCircle2, XCircle, Clock, Activity, RefreshCw, Search
+- Uses shadcn/ui Badge and Button components
+- Helper components: SignalBars (4-bar signal strength indicator), ConnectionTypeIcon (WiFi/USB/Bluetooth icon switcher)
+- Responsive grid layout (1/2 columns for devices, 2/4 columns for connection details)
+- Frontend-only component with mock/simulated data, no API calls
+- No modifications to app store, sidebar, or page.tsx (integration handled by another agent)
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- AutoConnectView component created with all 6 required sections
+- Radar pulse animation with CSS keyframes for scan visualization
+- 4 discovered devices with signal strength bars and connection workflow
+- Connection status card with live timer and latency display
+- Connection history with parameter counts
+- Quick connect tips section
+- Ready for integration into page.tsx sidebar navigation
+
+---
+Task ID: 12
+Agent: Component Builder
+Task: Create Remote Diagnostics View component for ECU Master Pro 2026
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Created Remote Diagnostics View (`src/components/ecu/remote-diag-view.tsx`):
+  - Page Header: Wrench icon, "Remote Diagnostics" title, "Connect to remote vehicles for real-time diagnostics and support" subtitle, teal "New Session" button with Radio icon
+  - Active Sessions section (2 active sessions):
+    - Session 1: VW Golf GTI (WVW...001) - Connected - 12 min initial duration, counting up - Signal: Excellent (4 bars)
+      - Live data: Engine RPM 2,840 rpm, Speed 72 km/h, Coolant 84°C
+      - Actions: View Live Data (teal), Send Command (purple), End Session (red)
+    - Session 2: BMW 330e (WBA...004) - Connected - 3 min initial duration, counting up - Signal: Good (3 bars)
+      - Live data: SOC 78%, Range 312 km, Motor Temp 52°C
+    - Each session card: vehicle name, VIN, green pulsing dot for connected status, Connected badge, duration (counting up via useEffect timer), signal strength bars (custom SignalBars component), live data preview grid (3 items), action buttons
+    - Selected session highlighted with teal border and glow effect
+    - Empty state when no sessions active (WifiOff icon)
+  - Available Vehicles section (3 vehicles):
+    - Mercedes C-Class (WDD...005) - Last seen: 5 min ago - Status: Online - Connect button (teal)
+    - Audi A4 (WAU...002) - Last seen: 2h ago - Status: Standby - Wake Up button (amber)
+    - Skoda Octavia (TMB...003) - Last seen: Offline - Status: Offline - Disabled button (grayed out)
+    - Each with: status badge (Online=green with pulsing dot, Standby=amber, Offline=gray), signal bars, last seen timestamp, context-appropriate action button
+    - Connect adds new session to active sessions list
+    - Wake Up sends a wake signal with command result feedback
+  - Session Statistics section (4 metric cards):
+    - Total Sessions: 156 (Radio icon, teal)
+    - Active Now: 2 (dynamic count from activeSessions.length, Signal icon, green)
+    - Avg Duration: 28 min (Clock icon, purple)
+    - Data Transferred: 2.4 GB (Globe icon, amber)
+  - Remote Commands Panel (2-column layout: commands + results):
+    - 5 remote commands with name, description, estimated time, risk level badge:
+      - Read DTC Codes - Safe - ~3 sec - No confirmation needed
+      - Clear DTC Codes - Caution - ~5 sec - Single confirmation
+      - Read Live Data - Safe - ~2 sec - No confirmation needed
+      - Actuator Test - Caution - ~10 sec - Single confirmation
+      - ECU Reset - Critical - ~15 sec - Double confirmation
+    - Each command: risk level badge (Safe=green, Caution=amber, Critical=red with AlertTriangle icon), Send button color-coded by risk level
+    - Confirmation flow: first click shows "Confirm command?" with Confirm/Cancel buttons
+    - Double confirmation flow for ECU Reset: first click shows "Are you absolutely sure?" with Confirm Reset/Cancel
+    - Sending state shows spinning RotateCcw icon with "Sending..." text
+    - Simulated 85% success rate with 0.8-2s delay
+    - Command Results panel shows history (max 10) with success/failure badges, timestamps, command name
+    - Clear button to reset results
+    - Empty state with Monitor icon when no results
+  - Connection Requirements section (4 info cards):
+    - Remote Client Required (Monitor icon, teal) - Remote client must be installed on target vehicle
+    - Stable Connection (Globe icon, green) - Stable internet connection required (min 1 Mbps)
+    - End-to-End Encrypted (Lock icon, purple) - Security: TLS 1.3
+    - Supported Protocols (Server icon, amber) - OBD-II, UDS, DoIP
+    - Each with icon, title, and description
+  - Custom SignalBars component: 4-bar visualization with color coding and glow effects
+  - Live data fluctuation simulation: useEffect with 2-second interval adding slight random variations to numeric values
+  - Session timer: useEffect with 1-second interval counting up connected session durations
+- Component uses 'use client' directive and named export RemoteDiagView
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses useState for activeSessions, selectedSessionId, commandResults, confirmingCommandId, doubleConfirmingCommandId, sendingCommandId, showResults
+- Uses useEffect for session timer (1s interval) and live data fluctuation (2s interval)
+- Uses lucide-react icons: Wrench, Wifi, WifiOff, Signal, Car, Send, XCircle, Clock, Shield, Activity, AlertTriangle, CheckCircle2, Radio, Monitor, Eye, RotateCcw, Zap, Globe, Lock, Server, ChevronDown, ChevronUp
+- Uses shadcn/ui Badge and Button components
+- Responsive grid layout (1/2/3/4 columns at breakpoints)
+- Frontend-only component with mock/simulated data, no API calls
+- No modifications to app store, sidebar, or page.tsx (integration handled by another agent)
+- Lint check passed with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- RemoteDiagView component created with all 6 required sections
+- Active sessions with live data preview, counting timers, signal strength, and action buttons
+- Available vehicles with context-appropriate connect/wake/offline buttons
+- Session statistics with 4 metric cards
+- Remote commands panel with 5 commands, single/double confirmation flows, risk badges, and result history
+- Connection requirements with 4 info cards
+- Ready for integration into page.tsx sidebar navigation
