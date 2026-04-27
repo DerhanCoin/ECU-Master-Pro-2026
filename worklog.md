@@ -864,3 +864,289 @@ Stage Summary:
 - Total API routes: 6
 - All sidebar nav items now route to unique views (no more duplicates)
 - Zero lint errors, dev server compiling successfully
+
+---
+Task ID: 1-3
+Agent: Component Builder
+Task: Build Notification Panel, Vehicle Selector, and enhance Top Navbar
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Updated App Store (`src/stores/app-store.ts`):
+  - Added `NotificationCategory` type union: 'dtc-alert' | 'maintenance' | 'ai-prediction' | 'system-update' | 'connection'
+  - Added `Notification` interface: id, category, title, description, timestamp, read
+  - Added `selectedVehicleId: string` field (initialized to 'vehicle-1')
+  - Added `notifications: Notification[]` field with 12 initial notifications across all 5 categories
+  - Added `setSelectedVehicleId` action
+  - Added `markNotificationRead(id)` action
+  - Added `markAllNotificationsRead()` action
+- Created Notification Panel (`src/components/ecu/notification-panel.tsx`):
+  - Rich notification dropdown panel (380px wide) with:
+    - Header: "Notifications" title with Bell icon, unread count badge (red), "Mark All Read" button with CheckCheck icon
+    - Category Filter Tabs: All | Alerts | Maintenance | AI | System - each with count indicator
+    - Scrollable notification list (380px height) with 12 notifications:
+      - DTC Alerts (red #ef4444): P0300 Misfire (2 min ago, unread), P0171 System Too Lean (15 min ago, unread), P0420 Catalyst Efficiency (3h ago, read)
+      - Maintenance (amber #f59e0b): Oil Change Due in 5 Days (1h ago, unread), Brake Service Overdue (2h ago, read), Tire Rotation Reminder (Yesterday, read)
+      - AI Predictions (purple #8b5cf6): Catalytic Converter Degradation Predicted (30 min ago, unread), Battery Decline Trend (4h ago, read)
+      - System Updates (teal #00d4ff): Firmware Update Available (1h ago, unread), AI Model Updated to v3.2 (Yesterday, read)
+      - Connection Events (green #10b981): BMW 330e Connected (5 min ago, unread), Remote Session Started (20 min ago, read)
+    - Each notification: color-coded category icon with background, title, description (2-line clamp), relative timestamp, unread dot indicator
+    - Unread notifications have colored left border highlight matching category
+    - Click-to-mark-read interaction on unread items
+    - Empty state for filtered categories with Bell icon
+    - Footer: "View All Notifications" link button with ExternalLink icon
+- Created Vehicle Selector (`src/components/ecu/vehicle-selector.tsx`):
+  - Dropdown trigger button: Car icon with brand color, vehicle name (truncated), health status dot with glow, ChevronDown
+  - Dropdown content (300px wide):
+    - Search input at top to filter vehicles by name or brand
+    - Scrollable vehicle list (max 300px) with 6 vehicles:
+      - VW Golf GTI (teal #00d4ff) - Healthy (green) - 94% health
+      - Audi A4 B9 (red #e80c1c) - Warning (amber) - 78% health
+      - BMW 330e (blue #3b82f6) - Healthy (green) - 91% health
+      - Mercedes C-Class (silver #94a3b8) - Critical (red) - 45% health
+      - Porsche Cayenne (red #ef4444) - Healthy (green) - 96% health
+      - Skoda Octavia (green #22c55e) - Offline (gray) - 82% health
+    - Each entry: Car icon with brand-colored background, vehicle name, status badge (colored), health progress bar with percentage, selected checkmark
+    - Selected vehicle has teal left border highlight and teal text
+    - Empty state for search with Car icon
+  - State: selectedVehicleId from app store, searchQuery local state
+  - Selection updates app store and closes dropdown
+- Enhanced Top Navbar (`src/components/ecu/top-navbar.tsx`):
+  - Added VehicleSelector component between left section and search bar (only visible when isConnected is true, hidden on mobile)
+  - Replaced basic 3-item notification dropdown with full NotificationPanel component (rendered inside DropdownMenuContent with transparent bg/border for seamless look)
+  - Notification badge now shows dynamic unread count from app store
+  - Added Command Palette trigger button (⌘K style) next to search bar with Command icon and "K" key hint (hidden on small screens)
+  - Wider search area (max-w-lg instead of max-w-md)
+  - All existing functionality preserved (menu toggle, logo, connection status, language, theme, user menu)
+- All components use 'use client' directive and named exports
+- All styling follows established dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling and rendering
+
+Stage Summary:
+- Three files modified/created: app-store.ts (updated), notification-panel.tsx (new), vehicle-selector.tsx (new), top-navbar.tsx (updated)
+- NotificationPanel: Rich dropdown with 12 notifications, 5 color-coded categories, filter tabs, mark-read functionality
+- VehicleSelector: Fleet vehicle dropdown with search, 6 vehicles with health bars, brand-colored icons
+- TopNavbar: Integrated both new components, added Cmd+K button, dynamic notification count
+- Zero lint errors, all pages compiling
+
+---
+Task ID: 4
+Agent: Dashboard Enhancer
+Task: Enhance Dashboard View with connection banner, AI insights, activity timeline, and live parameter animations
+
+Work Log:
+- Read existing dashboard-view.tsx (530 lines) and app-store.ts to understand current structure and available store properties
+- Read worklog.md for context on previous agent work and project conventions
+- Enhanced DashboardView component with 4 new features while preserving all existing content:
+
+1. **Connection Status Banner** (at the very top, above page header):
+   - When disconnected (isConnected=false): Warning banner with WifiOff icon, amber background (#f59e0b/10), amber border, "No device connected" message, teal "Connect Device" button that opens connect modal via setConnectModalOpen(true)
+   - When connected (isConnected=true): Success banner with Wifi icon, green background (#10b981/10), green border, "Connected via {selectedDevice}" message, red "Disconnect" button that calls setIsConnected(false) and setSelectedDevice(null)
+   - Added WifiOff and Unplug icons to imports
+   - Added handleDisconnect callback using useCallback
+
+2. **AI Insights Section** (new row between metric cards and main content grid):
+   - 3 insight cards in responsive 3-column grid:
+     - Prediction: "Catalytic converter efficiency declining - 72% probability" with TrendingUp icon, purple (#8b5cf6) accent
+     - Anomaly: "Unusual vibration pattern detected at 2,400 RPM" with AlertTriangle icon, amber (#f59e0b) accent
+     - Trend: "Battery voltage declining 0.1V/month - monitor recommended" with TrendingDown icon, teal (#00d4ff) accent
+   - Each card: icon in colored container, title, description, "View Details" button navigating to 'ai-diagnostics' view
+   - Section header with Brain icon and "Powered by AI" badge
+   - Hover effects with border color transitions
+
+3. **Recent Activity Timeline** (new section before Service & Maintenance row):
+   - 8 activity events with vertical timeline visual:
+     1. "DTC P0300 detected on VW Golf GTI" - 2 min ago - CRITICAL (red #ef4444)
+     2. "AI analysis completed for Mercedes C-Class" - 15 min ago - AI (purple #8b5cf6)
+     3. "Oil change completed on BMW 330e" - 1h ago - SERVICE (green #10b981)
+     4. "Firmware update available for VAS 6154" - 2h ago - SYSTEM (teal #00d4ff)
+     5. "Battery voltage alert on Audi A4" - 3h ago - WARNING (amber #f59e0b)
+     6. "Remote diagnostic session ended" - 5h ago - CONNECTION (blue #3b82f6)
+     7. "CAN bus error frame detected" - 8h ago - ERROR (red #ef4444)
+     8. "Predictive maintenance report generated" - Yesterday - AI (purple #8b5cf6)
+   - Visual timeline: colored dots with inner dot on left, connecting vertical line (2px, #1e2a3a)
+   - Each card: event message, timestamp, color-coded category badge
+   - "View Full Log" button at the bottom with Clock icon
+   - Event count badge in header
+
+4. **Enhanced Live Engine Parameters with Live Animation**:
+   - Added ParamState interface with value, unit, color, percent, history (last 6 readings), trend direction, min/max, fluctuation rate
+   - Added initialParams constant with realistic starting values and history arrays
+   - Added useEffect with setInterval (2 seconds) that:
+     - Applies slight random fluctuations (each param has its own fluctuation range)
+     - Clamps values within min/max bounds
+     - Updates history array (sliding window of last 6 readings)
+     - Calculates trend direction (up/down/stable) based on change threshold
+     - Recalculates percent based on min/max range
+   - Added trend indicator arrows: ArrowUp (green) for rising, ArrowDown (red) for falling, ArrowRight (gray) for stable
+   - Added sparkline mini-bar chart (last 6 readings):
+     - CSS bars normalized to min/max of the history window
+     - Latest reading highlighted with full opacity and color
+     - Previous readings shown at 60% opacity with 40% color
+     - Bars transition smoothly with duration-300
+   - Added "LIVE" indicator with green pulsing dot next to section header
+   - Added formatValue helper for proper number formatting (RPM with commas, Battery/Boost with 1 decimal, others as integers)
+
+- Added new imports: WifiOff, TrendingDown, ArrowUp, ArrowDown, Brain, Unplug
+- Added useCallback import from React
+- All new store property accesses: isConnected, selectedDevice, setConnectModalOpen, setIsConnected, setSelectedDevice
+- All styling follows the dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Responsive layout: mobile-first with sm/md/lg breakpoints
+- Component already had 'use client' directive
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling
+
+Stage Summary:
+- DashboardView enhanced with 4 new features without breaking any existing content
+- Connection banner: contextual warning/success banner with connect/disconnect actions
+- AI Insights: 3 insight cards (Prediction, Anomaly, Trend) with navigation to ai-diagnostics
+- Activity Timeline: 8-event vertical timeline with colored dots, connecting lines, category badges
+- Live Parameters: real-time simulated fluctuations with sparkline charts and trend arrows
+- All 4 features use the app store for state management and navigation
+- Zero lint errors, dev server compiling successfully
+
+---
+Task ID: 5
+Agent: Component Builder
+Task: Build Command Palette / Search Dialog (Cmd+K style) for quick navigation and search
+
+Work Log:
+- Read worklog and existing codebase to understand project patterns, styling conventions, and available components
+- Updated app store (`src/stores/app-store.ts`):
+  - Added `isCommandPaletteOpen: boolean` state (default: false)
+  - Added `setCommandPaletteOpen: (open: boolean) => void` action
+- Created Command Palette component (`src/components/ecu/command-palette.tsx`):
+  - Full overlay modal with dark backdrop (bg-black/60 + backdrop-blur-sm)
+  - Triggered by Cmd+K / Ctrl+K keyboard shortcut via useEffect global listener
+  - 500px wide, positioned at top 12% of screen, centered horizontally
+  - Animated slide-down entrance using Tailwind animate-in + slide-in-from-top-4
+  - Search Input with Search icon, "Type a command or search..." placeholder, ESC close button
+  - Quick Actions Section (labeled "Quick Actions", teal heading):
+    - "Quick Scan Vehicle" (Zap icon, ⌘⇧S) → navigates to 'dtc-scan'
+    - "Connect Device" (Wifi icon, ⌘⇧C) → opens connect modal
+    - "Run AI Analysis" (Brain icon, ⌘⇧A) → navigates to 'ai-diagnostics'
+    - "View Live Data" (Activity icon, ⌘⇧L) → navigates to 'live-data'
+    - "Check Service History" (Calendar icon, ⌘⇧H) → navigates to 'service'
+    - "Open Settings" (Settings icon, ⌘,) → navigates to 'settings'
+    - Each with keyboard shortcut hint in CommandShortcut
+  - Navigation Section (labeled "Navigate", gray heading):
+    - All 19 views: Dashboard, AI Predict, Live Data, DTC Scanner, Fleet, OEM Scan, Auto Connect, Remote Diag, Remote Client, USB OBD, Web Diag, SmartLink, AI Diagnostics, Performance, CAN Bus, Network Analysis, EV/Hybrid, Service, Settings
+    - Each with appropriate icon and ChevronRight indicator
+  - Recent Vehicles Section (labeled "Recent Vehicles"):
+    - VW Golf GTI (Healthy, green CheckCircle2)
+    - Audi A4 B9 (Warning, yellow AlertCircle)
+    - BMW 330e (Healthy, green CheckCircle2)
+    - Mercedes C-Class (Critical, red AlertTriangle)
+    - Each with Car icon and color-coded status
+  - DTC Code Lookup Section (labeled "DTC Code Lookup"):
+    - Appears when user types a DTC pattern (starts with P/B/C/U followed by digits)
+    - P0300 → "Random/Multiple Cylinder Misfire Detected"
+    - P0171 → "System Too Lean (Bank 1)"
+    - P0420 → "Catalyst System Efficiency Below Threshold"
+    - C0035 → "Left Front Wheel Speed Sensor"
+    - B1000 → "ECU Internal Circuit Failure"
+    - U0100 → "Lost Communication With ECM/PCM"
+    - Each with Code icon, mono font code display, and description
+    - Selecting navigates to DTC Scanner
+  - Footer with keyboard hints: ↑↓ navigate, ↵ select, esc close
+  - Uses shadcn/ui Command component (cmdk) for built-in keyboard navigation
+  - Arrow keys navigate, Enter selects, Escape closes
+  - Clicking backdrop closes palette
+  - After selecting action, closes palette and executes navigation
+  - Search resets when palette reopens (component remounts)
+- Updated top-navbar.tsx:
+  - Added setCommandPaletteOpen to useAppStore destructuring
+  - Wired Cmd+K button to call setCommandPaletteOpen(true)
+- Updated page.tsx:
+  - Imported CommandPalette from '@/components/ecu/command-palette'
+  - Added <CommandPalette /> after <AiAssistantPanel />
+- Architecture: Split into outer CommandPalette (controls open/close, keyboard shortcut) and inner CommandPaletteContent (manages search state, renders content). This ensures search resets on open since CommandPaletteContent unmounts when palette closes.
+- All styling follows dark navy theme (#0f1923, #151d2b, #1e2a3a, #00d4ff)
+- Uses cmdk via shadcn/ui Command components for accessible keyboard navigation
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling
+
+Stage Summary:
+- Command Palette component created with all 4 required sections (Quick Actions, Navigation, Recent Vehicles, DTC Lookup)
+- Full keyboard support: Cmd+K/Ctrl+K to open, arrow keys to navigate, Enter to select, Escape to close
+- Backdrop click to close, search filtering across all sections
+- Integrated into page.tsx and wired to navbar Cmd+K button via app store
+- App store extended with isCommandPaletteOpen/setCommandPaletteOpen
+- Zero lint errors, dev server compiling successfully
+
+---
+Task ID: 6-7
+Agent: Fullstack Developer
+Task: Add mobile responsive improvements and connect fleet/dashboard views to API
+
+Work Log:
+- Read worklog and existing codebase (app-store, sidebar, top-navbar, fleet-view, dashboard-view, API routes)
+- Part 1: Mobile Responsive Sidebar
+  - Added `sidebarMobileOpen` and `setSidebarMobileOpen` to app store (src/stores/app-store.ts)
+  - Updated sidebar.tsx: On mobile (<md), sidebar uses `fixed inset-y-0 left-0 z-40` positioning with `-translate-x-full md:translate-x-0` for slide-in/out
+  - Added dark semi-transparent backdrop overlay (`bg-black/60 backdrop-blur-sm md:hidden`) that shows when mobile sidebar is open
+  - Added X close button inside sidebar (visible on mobile only)
+  - Nav items auto-close mobile sidebar on click via `setSidebarMobileOpen(false)`
+  - Updated top-navbar.tsx: Split Menu button into two - mobile (toggles sidebarMobileOpen) and desktop (toggles sidebarCollapsed)
+  - Desktop: `hidden md:flex` for collapse toggle; Mobile: `md:hidden` for mobile open toggle
+- Part 2: Connect Fleet View to API
+  - Added useEffect to fetch from /api/vehicles on component mount
+  - Maps Prisma vehicle data to FleetVehicle type with status mapping and brand color assignment
+  - Falls back to existing 8-vehicle mock data if API call fails or returns empty
+  - Added `isLoading` state with shimmer/skeleton card effect (8 SkeletonCard components with animate-pulse)
+  - Added "Live" / "Demo" / "Loading" indicator badge in page header
+  - Summary metrics now dynamically derived from vehicles array
+  - Brand filter options dynamically generated from loaded vehicles
+  - Responsive padding adjustments (p-4 sm:p-6)
+- Part 3: Connect Dashboard to API
+  - Added parallel API fetching from /api/vehicles, /api/dtc-codes, /api/service-records using Promise.allSettled
+  - Vehicle health score derived from average of all vehicle health scores from API
+  - Active DTCs count from /api/dtc-codes active field
+  - Service record count from /api/service-records total field
+  - Fleet size from /api/vehicles total field
+  - Metric cards updated: Vehicle Health, Active DTCs, Service Records, Fleet Size
+  - Added MetricCardSkeleton component for loading state (4 skeleton cards with animate-pulse)
+  - Added "Live" / "Demo" / "Loading" indicator badge in Dashboard header
+  - Active Alerts badge count now uses DTC API data
+  - Falls back to hardcoded mock values for all metrics if API calls fail
+  - `isLive` state tracks whether any API call succeeded
+- Lint check passed with zero errors
+- Dev server running successfully, all pages compiling and rendering
+
+Stage Summary:
+- Mobile responsive sidebar with slide-in overlay, backdrop, and auto-close on navigation
+- Fleet view connected to /api/vehicles with fallback to mock data and skeleton loading
+- Dashboard connected to 3 API endpoints with parallel fetching, fallback, and loading skeletons
+- Live/Demo data source indicators on both Fleet and Dashboard views
+- Zero lint errors, all pages compiling
+
+---
+Task ID: Continue-Todo-Session-2
+Agent: Main Agent
+Task: Continue building ECU Master Pro 2026 - notification panel, vehicle selector, command palette, mobile responsive, API integration
+
+Work Log:
+- Built Notification Panel (notification-panel.tsx) - 12 notifications, 5 categories, filter tabs, mark-as-read
+- Built Vehicle Selector (vehicle-selector.tsx) - 6 vehicles, search filter, health bars, selection state
+- Enhanced Top Navbar - integrated notification panel and vehicle selector, added Cmd+K button
+- Enhanced Dashboard - connection status banner, AI insights section, recent activity timeline, live engine parameter simulation with sparklines
+- Built Command Palette (command-palette.tsx) - Cmd+K triggered, quick actions, navigation, DTC lookup, keyboard navigation
+- Added mobile responsive sidebar - overlay on mobile, slide-in animation, auto-close on nav
+- Connected Fleet View to /api/vehicles API with fallback to mock data
+- Connected Dashboard to /api/vehicles, /api/dtc-codes, /api/service-records with fallback
+- Added Live/Demo/Loading badges on dashboard and fleet views
+- Added skeleton loading states for metric cards
+- Updated app store with: selectedVehicleId, notifications, markNotificationRead, markAllNotificationsRead, sidebarMobileOpen, isCommandPaletteOpen
+- All lint checks pass with zero errors
+- Dev server running successfully
+
+Stage Summary:
+- 32 ECU component files total (added notification-panel, vehicle-selector, command-palette)
+- Rich notification system with 5 categories and read/unread tracking
+- Vehicle selector with fleet health visualization
+- Command palette (Cmd+K) with search, DTC lookup, quick actions
+- Mobile responsive sidebar with overlay
+- Dashboard and Fleet views connected to Prisma database APIs
+- Live data simulation with sparkline charts on dashboard
+- Zero lint errors, dev server compiling successfully

@@ -23,6 +23,7 @@ import { SettingsView } from '@/components/ecu/settings-view'
 import { UsbObdView } from '@/components/ecu/usb-obd-view'
 import { SmartLinkView } from '@/components/ecu/smartlink-view'
 import { AiAssistantPanel } from '@/components/ecu/ai-assistant-panel'
+import { CommandPalette } from '@/components/ecu/command-palette'
 import { useAppStore } from '@/stores/app-store'
 
 export default function Home() {
@@ -96,6 +97,9 @@ export default function Home() {
 
       {/* AI Assistant floating chat */}
       <AiAssistantPanel />
+
+      {/* Command Palette (Cmd+K) */}
+      <CommandPalette />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,7 @@ import {
   Wrench,
   ChevronRight,
   Filter,
+  Radio,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -32,9 +33,9 @@ interface FleetVehicle {
   color: string
 }
 
-// ── Sample Data ─────────────────────────────────────────────────────────────
+// ── Fallback Sample Data ────────────────────────────────────────────────────
 
-const vehicles: FleetVehicle[] = [
+const fallbackVehicles: FleetVehicle[] = [
   {
     id: '1',
     name: '2024 VW Golf GTI',
@@ -132,9 +133,6 @@ const statusIconMap: Record<VehicleStatus, React.ReactNode> = {
   Critical: <AlertTriangle className="h-3 w-3" />,
   Offline: <WifiOff className="h-3 w-3" />,
 }
-
-const allBrands = ['All', ...Array.from(new Set(vehicles.map((v) => v.brand)))]
-const allStatuses: Array<'All' | VehicleStatus> = ['All', 'Healthy', 'Warning', 'Critical', 'Offline']
 
 // ── Circular Progress Component ─────────────────────────────────────────────
 
@@ -264,6 +262,35 @@ function VehicleCard({ vehicle }: { vehicle: FleetVehicle }) {
   )
 }
 
+// ── Skeleton Card Component ─────────────────────────────────────────────────
+
+function SkeletonCard() {
+  return (
+    <div className="bg-[#151d2b] border border-[#1e2a3a] rounded-lg overflow-hidden animate-pulse">
+      {/* Image placeholder skeleton */}
+      <div className="h-28 bg-[#1e2a3a]/50" />
+      {/* Content skeleton */}
+      <div className="p-4 space-y-3">
+        <div className="space-y-2">
+          <div className="h-3.5 bg-[#1e2a3a] rounded w-3/4" />
+          <div className="h-2.5 bg-[#1e2a3a] rounded w-1/2" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="h-[52px] w-[52px] bg-[#1e2a3a] rounded-full" />
+          <div className="space-y-1.5">
+            <div className="h-2 bg-[#1e2a3a] rounded w-16" />
+            <div className="h-2.5 bg-[#1e2a3a] rounded w-12" />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 h-7 bg-[#1e2a3a] rounded" />
+          <div className="flex-1 h-7 bg-[#1e2a3a] rounded" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Summary Metric Card Component ───────────────────────────────────────────
 
 function FleetMetricCard({
@@ -272,12 +299,14 @@ function FleetMetricCard({
   icon,
   color,
   subtitle,
+  isLoading,
 }: {
   title: string
   value: number
   icon: React.ReactNode
   color: string
   subtitle: string
+  isLoading?: boolean
 }) {
   return (
     <div className="bg-[#151d2b] border border-[#1e2a3a] rounded-lg p-4 transition-all duration-200 hover:border-[#2d3f55]">
@@ -287,14 +316,54 @@ function FleetMetricCard({
           <span style={{ color }}>{icon}</span>
         </div>
       </div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold" style={{ color }}>
-          {value}
-        </span>
-      </div>
+      {isLoading ? (
+        <div className="h-7 bg-[#1e2a3a] rounded w-16 animate-pulse" />
+      ) : (
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold" style={{ color }}>
+            {value}
+          </span>
+        </div>
+      )}
       <div className="text-[11px] text-[#475569] mt-1">{subtitle}</div>
     </div>
   )
+}
+
+// ── Map API status to display status ────────────────────────────────────────
+
+function mapApiStatus(status: string): VehicleStatus {
+  switch (status.toLowerCase()) {
+    case 'healthy': return 'Healthy'
+    case 'warning': return 'Warning'
+    case 'critical': return 'Critical'
+    case 'offline': return 'Offline'
+    default: return 'Offline'
+  }
+}
+
+const brandColorMap: Record<string, string> = {
+  VW: '#00d4ff',
+  Audi: '#8b5cf6',
+  BMW: '#10b981',
+  Mercedes: '#f59e0b',
+  Skoda: '#10b981',
+  Porsche: '#ef4444',
+  Seat: '#64748b',
+  Cupra: '#8b5cf6',
+}
+
+function formatLastConnected(date: Date | null): string {
+  if (!date) return 'Never'
+  const now = new Date()
+  const diff = now.getTime() - new Date(date).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes} min ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hr ago`
+  const days = Math.floor(hours / 24)
+  return `${days} day${days > 1 ? 's' : ''} ago`
 }
 
 // ── Main Fleet View Component ───────────────────────────────────────────────
@@ -303,6 +372,92 @@ export function FleetView() {
   const [searchQuery, setSearchQuery] = useState('')
   const [brandFilter, setBrandFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState<'All' | VehicleStatus>('All')
+  const [vehicles, setVehicles] = useState<FleetVehicle[]>(fallbackVehicles)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLive, setIsLive] = useState(false)
+
+  // Summary metrics derived from vehicles
+  const summaryMetrics = [
+    {
+      title: 'Total Vehicles',
+      value: vehicles.length,
+      icon: <Car className="h-4 w-4" />,
+      color: '#00d4ff',
+      subtitle: 'Registered in fleet',
+    },
+    {
+      title: 'Active',
+      value: vehicles.filter(v => v.status === 'Healthy' || v.status === 'Warning').length,
+      icon: <Wifi className="h-4 w-4" />,
+      color: '#10b981',
+      subtitle: 'Currently online',
+    },
+    {
+      title: 'Needs Attention',
+      value: vehicles.filter(v => v.status === 'Critical' || v.status === 'Warning').length,
+      icon: <AlertTriangle className="h-4 w-4" />,
+      color: '#f59e0b',
+      subtitle: 'Warning or critical',
+    },
+    {
+      title: 'Offline',
+      value: vehicles.filter(v => v.status === 'Offline').length,
+      icon: <WifiOff className="h-4 w-4" />,
+      color: '#64748b',
+      subtitle: 'Not connected',
+    },
+  ]
+
+  // Fetch vehicles from API on mount
+  useEffect(() => {
+    let cancelled = false
+
+    async function fetchVehicles() {
+      setIsLoading(true)
+      try {
+        const res = await fetch('/api/vehicles')
+        if (!res.ok) throw new Error('API error')
+        const data = await res.json()
+
+        if (cancelled) return
+
+        if (data.success && data.vehicles && data.vehicles.length > 0) {
+          const mapped: FleetVehicle[] = data.vehicles.map((v: Record<string, unknown>) => ({
+            id: v.id as string,
+            name: v.name as string,
+            brand: (v.brand as string) || 'Unknown',
+            vin: v.vin as string,
+            status: mapApiStatus(v.status as string),
+            healthScore: (v.health as number) ?? 80,
+            lastConnected: formatLastConnected(v.lastConnected as Date | null),
+            color: brandColorMap[(v.brand as string)] ?? '#64748b',
+          }))
+          setVehicles(mapped)
+          setIsLive(true)
+        } else {
+          // Fallback to mock data
+          setVehicles(fallbackVehicles)
+          setIsLive(false)
+        }
+      } catch {
+        if (!cancelled) {
+          // Fallback to mock data on error
+          setVehicles(fallbackVehicles)
+          setIsLive(false)
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    fetchVehicles()
+    return () => { cancelled = true }
+  }, [])
+
+  const allBrands = ['All', ...Array.from(new Set(vehicles.map((v) => v.brand)))]
+  const allStatuses: Array<'All' | VehicleStatus> = ['All', 'Healthy', 'Warning', 'Critical', 'Offline']
 
   const filteredVehicles = vehicles.filter((v) => {
     const matchesSearch =
@@ -313,40 +468,9 @@ export function FleetView() {
     return matchesSearch && matchesBrand && matchesStatus
   })
 
-  const summaryMetrics = [
-    {
-      title: 'Total Vehicles',
-      value: 24,
-      icon: <Car className="h-4 w-4" />,
-      color: '#00d4ff',
-      subtitle: 'Registered in fleet',
-    },
-    {
-      title: 'Active',
-      value: 18,
-      icon: <Wifi className="h-4 w-4" />,
-      color: '#10b981',
-      subtitle: 'Currently online',
-    },
-    {
-      title: 'Needs Attention',
-      value: 4,
-      icon: <AlertTriangle className="h-4 w-4" />,
-      color: '#f59e0b',
-      subtitle: 'Warning or critical',
-    },
-    {
-      title: 'Offline',
-      value: 2,
-      icon: <WifiOff className="h-4 w-4" />,
-      color: '#64748b',
-      subtitle: 'Not connected',
-    },
-  ]
-
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Page header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -356,6 +480,22 @@ export function FleetView() {
               <Badge className="bg-[#00d4ff]/20 text-[#00d4ff] border-[#00d4ff]/30 text-[10px] font-semibold">
                 NEW
               </Badge>
+              {/* Live / Demo indicator */}
+              {isLoading ? (
+                <Badge className="bg-[#1e2a3a] text-[#64748b] border-[#2d3f55] text-[10px] gap-1 animate-pulse">
+                  <Radio className="h-2.5 w-2.5" />
+                  Loading
+                </Badge>
+              ) : isLive ? (
+                <Badge className="bg-[#10b981]/20 text-[#10b981] border-[#10b981]/30 text-[10px] gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] animate-pulse" />
+                  Live
+                </Badge>
+              ) : (
+                <Badge className="bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/30 text-[10px] gap-1">
+                  Demo
+                </Badge>
+              )}
             </div>
             <p className="text-xs text-[#64748b]">
               Monitor and manage your vehicle fleet with centralized diagnostics
@@ -371,9 +511,9 @@ export function FleetView() {
         </div>
 
         {/* Summary metric cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {summaryMetrics.map((metric) => (
-            <FleetMetricCard key={metric.title} {...metric} />
+            <FleetMetricCard key={metric.title} {...metric} isLoading={isLoading} />
           ))}
         </div>
 
@@ -392,8 +532,8 @@ export function FleetView() {
 
           {/* Brand filter */}
           <div className="flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-[#64748b]" />
-            <div className="flex items-center gap-1 overflow-x-auto">
+            <Filter className="h-3.5 w-3.5 text-[#64748b] flex-shrink-0" />
+            <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
               {allBrands.map((brand) => (
                 <button
                   key={brand}
@@ -431,14 +571,22 @@ export function FleetView() {
         </div>
 
         {/* Vehicle grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredVehicles.map((vehicle) => (
+              <VehicleCard key={vehicle.id} vehicle={vehicle} />
+            ))}
+          </div>
+        )}
 
         {/* Empty state */}
-        {filteredVehicles.length === 0 && (
+        {!isLoading && filteredVehicles.length === 0 && (
           <div className="bg-[#151d2b] border border-[#1e2a3a] rounded-lg p-8 text-center">
             <Car className="h-10 w-10 text-[#64748b] mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-[#e2e8f0] mb-1">No vehicles found</h3>
