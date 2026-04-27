@@ -71,6 +71,15 @@ import { TrendsView } from '@/components/ecu/trends-view'
 import { ServiceView } from '@/components/ecu/service-view'
 import { ServiceHistoryView } from '@/components/ecu/service-history-view'
 
+// SDV & Next-Gen
+import { SOVDView } from '@/components/ecu/sovd-view'
+import { OTAView } from '@/components/ecu/ota-view'
+import { DigitalTwinView } from '@/components/ecu/digital-twin-view'
+import { IdpsView } from '@/components/ecu/idps-view'
+import { V2XView } from '@/components/ecu/v2x-view'
+import { SBOMView } from '@/components/ecu/sbom-view'
+import { ComplianceView } from '@/components/ecu/compliance-view'
+
 // Business
 import { TrainingView } from '@/components/ecu/training-view'
 import { ShopView } from '@/components/ecu/shop-view'
@@ -148,6 +157,15 @@ export default function Home() {
       case 'trends': return <TrendsView />
       case 'service': return <ServiceView />
       case 'service-history': return <ServiceHistoryView />
+
+      // SDV & Next-Gen
+      case 'sovd': return <SOVDView />
+      case 'ota': return <OTAView />
+      case 'digital-twin': return <DigitalTwinView />
+      case 'idps': return <IdpsView />
+      case 'v2x': return <V2XView />
+      case 'sbom': return <SBOMView />
+      case 'compliance': return <ComplianceView />
 
       // Business
       case 'training': return <TrainingView />

@@ -58,3 +58,42 @@ Stage Summary:
 - Web Serial/Bluetooth OBD connection manager
 - Professional dongle browser UI integrated
 - All dongles have drivers, firmware, and protocol information
+
+---
+Task ID: sdv-nextgen-v2026.3
+Agent: main
+Task: Implement v2026.3 SDV & Next-Gen features — SOVD, OTA, Digital Twin, IDPS, V2X, SBOM, Compliance
+
+Work Log:
+- Added 7 new ViewType entries to Zustand store: sovd, ota, digital-twin, idps, v2x, sbom, compliance
+- Created /src/lib/sovd-client.ts — SOVD REST Diagnostic Client (ISO 17978-3, ASAM SOVD v1.0)
+  - SOVDClient class with OAuth2 auth, component discovery, fault management, data groups, operations, OTA, OpenAPI spec
+  - DiagnosticRouter class with SOVD/UDS auto-routing
+  - Demo data: 6 components, 10+ faults, 8+ data groups, 8+ operations, SW packages
+- Created /src/lib/ota-manager.ts — OTA Campaign Manager (Uptane Framework, UNECE R156)
+  - OTACampaignManager with campaign CRUD, staged rollout, vehicle status tracking, firmware management
+  - Mock data: 3 campaigns, 5 firmware packages, 7+ vehicle statuses
+- Created /src/lib/digital-twin-engine.ts — Digital Twin Engine
+  - DigitalTwinEngine with twin listing, OTA pre-validation simulation, sync
+  - Mock data: 5 twins with varying health scores
+- Created /src/lib/idps-monitor.ts — IDPS Monitor (ISO 21434, UNECE R155)
+  - IDPSMonitor with alert management, rule toggling, stats
+  - Mock data: 14 rules, 23 alerts, precision/recall metrics
+- Created /src/components/ecu/sovd-view.tsx — SOVD Diagnostic Console UI
+- Created /src/components/ecu/ota-view.tsx — OTA Campaign Manager UI
+- Created /src/components/ecu/digital-twin-view.tsx — Digital Twin Explorer UI
+- Created /src/components/ecu/idps-view.tsx — IDPS Monitor UI
+- Created /src/components/ecu/v2x-view.tsx — V2X Communication Monitor UI (ETSI ITS / SAE J2735)
+- Created /src/components/ecu/sbom-view.tsx — Software Bill of Materials UI (SPDX 2.3)
+- Created /src/components/ecu/compliance-view.tsx — Regulatory Compliance Dashboard UI (ISO 21434, UNECE R155/R156, GDPR)
+- Updated sidebar.tsx with "SDV & Next-Gen" section (7 nav items, default open)
+- Updated page.tsx with all 7 new route imports and switch cases
+- ESLint: 0 errors
+- Dev server: HTTP 200, compiling cleanly
+
+Stage Summary:
+- Total ViewType entries: 60 (53 original + 7 new SDV)
+- Total view components: 78 in /src/components/ecu/
+- 4 new lib files in /src/lib/
+- All 7 new SDV routes fully functional
+- Standards coverage: ISO 17978-3 (SOVD), Uptane/UNECE R156, ISO 21434, UNECE R155, SAE J2735, SPDX 2.3, GDPR

@@ -56,6 +56,7 @@ import {
   X,
   Timer,
   MapPin,
+  Upload,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -281,6 +282,19 @@ export function ECUSidebar() {
             <NavItem icon={<TrendingUp className="h-4 w-4" />} label="Trends" view="trends" />
             <NavItem icon={<CalendarClock className="h-4 w-4" />} label="Service" view="service" />
             <NavItem icon={<BarChart3 className="h-4 w-4" />} label="Service History" view="service-history" />
+          </NavSection>
+
+          <Separator className="bg-[#1e2a3a] my-0.5" />
+
+          {/* SDV & Next-Gen */}
+          <NavSection title="SDV & Next-Gen" defaultOpen={true}>
+            <NavItem icon={<Globe className="h-4 w-4" />} label="SOVD Console" view="sovd" badge="SOVD" badgeColor="purple" />
+            <NavItem icon={<Upload className="h-4 w-4" />} label="OTA Manager" view="ota" badge="UPTANE" badgeColor="orange" />
+            <NavItem icon={<Cpu className="h-4 w-4" />} label="Digital Twin" view="digital-twin" badge="NEW" badgeColor="green" />
+            <NavItem icon={<ShieldAlert className="h-4 w-4" />} label="IDPS Monitor" view="idps" badge="SEC" badgeColor="red" />
+            <NavItem icon={<Radio className="h-4 w-4" />} label="V2X Monitor" view="v2x" badge="V2X" badgeColor="teal" />
+            <NavItem icon={<FileText className="h-4 w-4" />} label="SBOM" view="sbom" badge="SPDX" badgeColor="purple" />
+            <NavItem icon={<ShieldAlert className="h-4 w-4" />} label="Compliance" view="compliance" badge="ISO" badgeColor="teal" />
           </NavSection>
 
           <Separator className="bg-[#1e2a3a] my-0.5" />
