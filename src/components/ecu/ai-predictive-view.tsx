@@ -4,6 +4,9 @@ import { useAppStore } from '@/stores/app-store'
 import { MetricCard } from './metric-card'
 import { PredictionCard } from './prediction-card'
 import { ModelInfoTable } from './model-info-table'
+import { AnalyticsTab } from './analytics-tab'
+import { ScheduleTab } from './schedule-tab'
+import { DigitalTwinTab } from './digital-twin-tab'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -101,7 +104,7 @@ export function AIPredictiveView() {
               Machine learning-based failure prediction and preventive maintenance
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
@@ -196,25 +199,18 @@ export function AIPredictiveView() {
         {/* Tab content */}
         {activeTab === 'predictions' && (
           <div className="space-y-6">
-            {/* Prediction cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {predictions.map((prediction, i) => (
                 <PredictionCard key={i} {...prediction} />
               ))}
             </div>
-
-            {/* AI Model Info */}
             <ModelInfoTable />
           </div>
         )}
 
-        {activeTab === 'analytics' && (
-          <div className="bg-[#151d2b] border border-[#1e2a3a] rounded-lg p-8 text-center">
-            <Zap className="h-10 w-10 text-[#00d4ff] mx-auto mb-3" />
-            <h3 className="text-sm font-semibold text-[#e2e8f0] mb-1">Analytics Dashboard</h3>
-            <p className="text-xs text-[#64748b]">Connect a vehicle to view real-time analytics and trend data.</p>
-          </div>
-        )}
+        {activeTab === 'analytics' && <AnalyticsTab />}
+        {activeTab === 'schedule' && <ScheduleTab />}
+        {activeTab === 'digital-twin' && <DigitalTwinTab />}
 
         {activeTab === 'alerts' && (
           <div className="space-y-3">
@@ -246,7 +242,7 @@ export function AIPredictiveView() {
           </div>
         )}
 
-        {activeTab !== 'predictions' && activeTab !== 'analytics' && activeTab !== 'alerts' && (
+        {!['predictions', 'analytics', 'alerts', 'schedule', 'digital-twin'].includes(activeTab) && (
           <div className="bg-[#151d2b] border border-[#1e2a3a] rounded-lg p-8 text-center">
             <Brain className="h-10 w-10 text-[#8b5cf6] mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-[#e2e8f0] mb-1 capitalize">{activeTab.replace('-', ' ')}</h3>

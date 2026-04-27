@@ -129,6 +129,7 @@ export function ECUSidebar() {
           <NavItem icon={<Car className="h-4 w-4" />} label="Fleet" view="fleet" badge="NEW" badgeColor="teal" />
           <NavItem icon={<Server className="h-4 w-4" />} label="OEM Scan" view="oem-scan" />
           <NavItem icon={<Zap className="h-4 w-4" />} label="AI Predict" view="ai-predict" badge="NEW" badgeColor="purple" />
+          <NavItem icon={<Activity className="h-4 w-4" />} label="Live Data" view="live-data" />
         </NavSection>
 
         <Separator className="bg-[#1e2a3a] my-1" />
@@ -145,7 +146,8 @@ export function ECUSidebar() {
         <Separator className="bg-[#1e2a3a] my-1" />
 
         <NavSection title="Diagnostics" defaultOpen={true}>
-          <NavItem icon={<AlertTriangle className="h-4 w-4" />} label="Diagnostics" view="diagnostics" />
+          <NavItem icon={<AlertTriangle className="h-4 w-4" />} label="DTC Scanner" view="dtc-scan" />
+          <NavItem icon={<Activity className="h-4 w-4" />} label="Diagnostics" view="diagnostics" />
           <NavItem icon={<Cpu className="h-4 w-4" />} label="AI Diagnostics" badge="AI" badgeColor="purple" />
           <NavItem icon={<Gauge className="h-4 w-4" />} label="Performance" />
           <NavItem icon={<BusFront className="h-4 w-4" />} label="CAN Bus" />
