@@ -12,7 +12,6 @@ import {
   Globe,
   Cable,
   Usb,
-  Link2,
   MonitorSmartphone,
   Stethoscope,
   Search,
@@ -29,7 +28,6 @@ import {
   ShieldAlert,
   CheckCircle2,
   ArrowLeftRight,
-  Settings2,
   CarFront,
   Sliders,
   Lock,
@@ -56,11 +54,8 @@ import {
   ChevronDown,
   ChevronRight,
   X,
-  Server,
   Timer,
-  Bug,
   MapPin,
-  Cog,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
