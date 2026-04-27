@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import {
   Cpu,
   HardDrive,
-  MemoryStick,
-  Chip,
+  CircuitBoard,
+  Microchip,
   Network,
   Shield,
   Fingerprint,
@@ -56,7 +56,7 @@ interface MemoryRegion {
 
 const memoryRegions: MemoryRegion[] = [
   { name: 'Flash', icon: HardDrive, total: '4 MB', used: '3.42 MB', free: '0.58 MB', usedPercent: 85.5, color: '#00d4ff' },
-  { name: 'RAM', icon: MemoryStick, total: '256 KB', used: '178 KB', free: '78 KB', usedPercent: 69.5, color: '#8b5cf6' },
+  { name: 'RAM', icon: CircuitBoard, total: '256 KB', used: '178 KB', free: '78 KB', usedPercent: 69.5, color: '#8b5cf6' },
   { name: 'EEPROM', icon: Database, total: '64 KB', used: '32 KB', free: '32 KB', usedPercent: 50, color: '#10b981' },
 ]
 
@@ -142,7 +142,7 @@ export function ECUInfoView() {
             {[
               { label: 'Manufacturer', value: ecuIdentification.manufacturer, icon: Wrench },
               { label: 'Part Number', value: ecuIdentification.partNumber, icon: Hash, copyable: true },
-              { label: 'Hardware Version', value: ecuIdentification.hardwareVersion, icon: Chip },
+              { label: 'Hardware Version', value: ecuIdentification.hardwareVersion, icon: Microchip },
               { label: 'Software Version', value: ecuIdentification.softwareVersion, icon: Layers },
               { label: 'Calibration ID', value: ecuIdentification.calibrationId, icon: Fingerprint, copyable: true },
               { label: 'Serial Number', value: ecuIdentification.serialNumber, icon: Hash, copyable: true },
@@ -215,7 +215,7 @@ export function ECUInfoView() {
             {/* Processor & Memory */}
             <div>
               <div className="text-[10px] text-[#475569] mb-2 flex items-center gap-1.5">
-                <Chip className="h-3 w-3" />
+                <Microchip className="h-3 w-3" />
                 Processor
               </div>
               <div className="text-sm font-mono font-bold text-[#e2e8f0]">{ecuCapabilities.processor}</div>
@@ -223,7 +223,7 @@ export function ECUInfoView() {
 
             <div>
               <div className="text-[10px] text-[#475569] mb-2 flex items-center gap-1.5">
-                <MemoryStick className="h-3 w-3" />
+                <CircuitBoard className="h-3 w-3" />
                 Total Memory
               </div>
               <div className="text-sm font-mono font-bold text-[#e2e8f0]">{ecuCapabilities.memorySize}</div>

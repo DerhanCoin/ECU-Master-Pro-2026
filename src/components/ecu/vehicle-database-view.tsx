@@ -19,7 +19,7 @@ import {
   AlertTriangle,
   FileText,
   Calendar,
-  Engine,
+  Cog,
   ArrowRight,
   Bookmark,
 } from 'lucide-react'
@@ -313,11 +313,11 @@ export function VehicleDatabaseView() {
                 {/* Specs Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { label: 'Engine', value: selectedVehicleData.engine, icon: Engine },
+                    { label: 'Engine', value: selectedVehicleData.engine, icon: Cog },
                     { label: 'Transmission', value: selectedVehicleData.transmission, icon: ArrowRight },
                     { label: 'Drivetrain', value: selectedVehicleData.drivetrain, icon: Car },
-                    { label: 'Power', value: `${selectedVehicleData.hp} HP`, icon: Engine },
-                    { label: 'Torque', value: selectedVehicleData.torque, icon: Engine },
+                    { label: 'Power', value: `${selectedVehicleData.hp} HP`, icon: Cog },
+                    { label: 'Torque', value: selectedVehicleData.torque, icon: Cog },
                     { label: 'Fuel', value: selectedVehicleData.fuelType, icon: Filter },
                     { label: 'Body', value: selectedVehicleData.bodyStyle, icon: Car },
                     { label: 'VIN', value: selectedVehicleData.vin, icon: FileText },

@@ -19,7 +19,7 @@ import {
   AlertTriangle,
   Shield,
   Cpu,
-  Oil,
+  Droplets,
   Snowflake,
   LayoutGrid,
   List,
@@ -76,7 +76,7 @@ const initialDigital: DigitalReadout[] = [
 
 const warningLights: WarningLight[] = [
   { id: 'checkengine', label: 'Check Engine', icon: <AlertTriangle className="h-4 w-4" />, active: false, color: '#f59e0b' },
-  { id: 'oilpressure', label: 'Oil Pressure', icon: <Oil className="h-4 w-4" />, active: false, color: '#ef4444' },
+  { id: 'oilpressure', label: 'Oil Pressure', icon: <Droplets className="h-4 w-4" />, active: false, color: '#ef4444' },
   { id: 'coolantwarn', label: 'Coolant', icon: <Thermometer className="h-4 w-4" />, active: false, color: '#ef4444' },
   { id: 'batterywarn', label: 'Battery', icon: <Battery className="h-4 w-4" />, active: false, color: '#f59e0b' },
   { id: 'abs', label: 'ABS', icon: <Shield className="h-4 w-4" />, active: false, color: '#f59e0b' },
