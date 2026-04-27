@@ -17,7 +17,12 @@ import { ServiceHistoryView } from '@/components/ecu/service-history-view'
 import { AutoConnectView } from '@/components/ecu/auto-connect-view'
 import { OEMScanView } from '@/components/ecu/oem-scan-view'
 import { RemoteDiagView } from '@/components/ecu/remote-diag-view'
+import { WebDiagView } from '@/components/ecu/web-diag-view'
+import { RemoteClientView } from '@/components/ecu/remote-client-view'
 import { SettingsView } from '@/components/ecu/settings-view'
+import { UsbObdView } from '@/components/ecu/usb-obd-view'
+import { SmartLinkView } from '@/components/ecu/smartlink-view'
+import { AiAssistantPanel } from '@/components/ecu/ai-assistant-panel'
 import { useAppStore } from '@/stores/app-store'
 
 export default function Home() {
@@ -39,8 +44,6 @@ export default function Home() {
         return <AutoConnectView />
       case 'oem-scan':
         return <OEMScanView />
-      case 'diagnostics':
-        return <DTCScanView />
       case 'ai-diagnostics':
         return <AIDiagnosticsView />
       case 'canbus':
@@ -55,6 +58,14 @@ export default function Home() {
         return <ServiceHistoryView />
       case 'remote-diag':
         return <RemoteDiagView />
+      case 'web-diag':
+        return <WebDiagView />
+      case 'remote-client':
+        return <RemoteClientView />
+      case 'usb-obd':
+        return <UsbObdView />
+      case 'smartlink':
+        return <SmartLinkView />
       case 'settings':
         return <SettingsView />
       default:
@@ -73,13 +84,18 @@ export default function Home() {
         <TopNavbar />
 
         {/* View content */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#0f1923]">
-          {renderView()}
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#0f1923]" key={activeView}>
+          <div className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-200">
+            {renderView()}
+          </div>
         </main>
       </div>
 
       {/* Connect device modal */}
       <ConnectDeviceModal />
+
+      {/* AI Assistant floating chat */}
+      <AiAssistantPanel />
     </div>
   )
 }
