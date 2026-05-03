@@ -49,8 +49,30 @@ export function ConnectDeviceModal() {
     selectedDevice,
     setSelectedDevice,
     isConnecting,
+    setIsConnecting,
+    setIsConnected,
     handleConnect,
   } = useAppStore()
+
+  const handleRealConnect = async () => {
+    setIsConnecting(true)
+    try {
+      // Try to connect via diagnostic backend
+      const res = await fetch('/api/connect?XTransformPort=8000', { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.success) {
+          // Backend connected (real or simulation)
+          handleConnect() // This sets the store state
+          return
+        }
+      }
+    } catch {
+      // Backend unreachable — fall back to simulation
+    }
+    // Fallback: just use the store's simulation connect
+    handleConnect()
+  }
 
   return (
     <Dialog open={isConnectModalOpen} onOpenChange={setConnectModalOpen}>
@@ -105,7 +127,7 @@ export function ConnectDeviceModal() {
               Auto Detect
             </Button>
             <Button
-              onClick={handleConnect}
+              onClick={handleRealConnect}
               disabled={!selectedDevice || isConnecting}
               className={cn(
                 'flex-1 text-xs h-9 font-medium transition-all',

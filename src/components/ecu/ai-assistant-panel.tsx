@@ -20,17 +20,26 @@ const QUICK_QUESTIONS = [
   'CAN bus troubleshooting',
 ]
 
+// Use a stable timestamp for SSR - will be replaced on client mount
+const STABLE_WELCOME_TS = new Date('2026-01-01T00:00:00Z')
 const WELCOME_MESSAGE: Message = {
   id: 'welcome',
   role: 'assistant',
   content:
     "Hello! I'm your AI Diagnostic Assistant. I can help with DTC codes, vehicle diagnostics, tuning recommendations, and more. How can I help you today?",
-  timestamp: new Date(),
+  timestamp: STABLE_WELCOME_TS,
 }
 
 export function AiAssistantPanel() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
+
+  // Replace welcome timestamp with real client time after mount
+  useEffect(() => {
+    setMessages(prev => prev.map(m =>
+      m.id === 'welcome' ? { ...m, timestamp: new Date() } : m
+    ))
+  }, [])
   const [inputText, setInputText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sessionId, setSessionId] = useState('')

@@ -202,7 +202,19 @@ export function CANBusView() {
   const [busLoad, setBusLoad] = useState(34)
   const [msgPerSec, setMsgPerSec] = useState(1247)
   const [errorCount, setErrorCount] = useState(0)
-  const [decodedSignals, setDecodedSignals] = useState<DecodedSignal[]>(generateDecodedSignals(0))
+  const [decodedSignals, setDecodedSignals] = useState<DecodedSignal[]>(() => {
+    // Use deterministic initial values to avoid SSR mismatch with Math.random
+    return [
+      { name: 'Engine RPM', value: '3,240', unit: 'rpm', sourceId: '0x0C0', timestamp: 0, color: '#00d4ff', icon: Gauge },
+      { name: 'Vehicle Speed', value: '87', unit: 'km/h', sourceId: '0x0C0', timestamp: 0, color: '#10b981', icon: Car },
+      { name: 'Coolant Temp', value: '89.0', unit: '°C', sourceId: '0x0C0', timestamp: 0, color: '#f59e0b', icon: Thermometer },
+      { name: 'Throttle Position', value: '34.0', unit: '%', sourceId: '0x1A2', timestamp: 0, color: '#8b5cf6', icon: Activity },
+      { name: 'Fuel Level', value: '72.0', unit: '%', sourceId: '0x3E8', timestamp: 0, color: '#06b6d4', icon: Fuel },
+      { name: 'Brake Pressure', value: '0.0', unit: 'bar', sourceId: '0x1A2', timestamp: 0, color: '#ef4444', icon: Disc },
+      { name: 'Steering Angle', value: '0.0', unit: '°', sourceId: '0x0C0', timestamp: 0, color: '#a855f7', icon: RotateCcw },
+      { name: 'Door Status', value: 'Closed', unit: '', sourceId: '0x3E8', timestamp: 0, color: '#10b981', icon: DoorOpen },
+    ]
+  })
   const [totalMessages, setTotalMessages] = useState(0)
   const [errorFrames, setErrorFrames] = useState(0)
   const [remoteFrames, setRemoteFrames] = useState(12)
