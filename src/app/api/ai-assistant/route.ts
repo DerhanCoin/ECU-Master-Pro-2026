@@ -21,7 +21,7 @@ Format responses with markdown when helpful (bullet points, bold text).`
 // In-memory conversation store (per session)
 const conversations = new Map<string, Array<{ role: string; content: string }>>()
 
-let zaiInstance: InstanceType<typeof ZAI> | null = null
+let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null
 
 async function getZAI() {
   if (!zaiInstance) {

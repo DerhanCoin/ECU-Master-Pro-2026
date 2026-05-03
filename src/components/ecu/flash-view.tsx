@@ -366,7 +366,7 @@ export function FlashView() {
               <div>
                 <div className="text-[10px] text-[#475569]">Elapsed</div>
                 <div className="text-xs font-mono text-[#e2e8f0]">
-                  {flashStage !== 'idle' ? `${Math.floor(flashProgress / 10)}m ${((flashProgress % 10) * 6).toFixed(0)}s` : '--'}
+                  {`${Math.floor(flashProgress / 10)}m ${((flashProgress % 10) * 6).toFixed(0)}s`}
                 </div>
               </div>
             </div>

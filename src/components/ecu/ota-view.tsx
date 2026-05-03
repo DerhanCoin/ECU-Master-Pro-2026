@@ -116,9 +116,10 @@ export function OTAView() {
 
   useEffect(() => {
     if (!selectedCampaignId) return
+    const campaignId = selectedCampaignId
     let cancelled = false
     async function fetchStatuses() {
-      const statuses = await otaManager.getVehicleStatuses(selectedCampaignId)
+      const statuses = await otaManager.getVehicleStatuses(campaignId)
       if (cancelled) return
       setVehicleStatuses(statuses)
     }

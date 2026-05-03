@@ -1,7 +1,7 @@
 import ZAI from 'z-ai-web-dev-sdk'
 import { NextRequest, NextResponse } from 'next/server'
 
-let zaiInstance: InstanceType<typeof ZAI> | null = null
+let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null
 
 async function getZAI() {
   if (!zaiInstance) {

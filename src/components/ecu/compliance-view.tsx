@@ -142,6 +142,7 @@ const RISK_COLORS: Record<TARAEntry['risk_level'], string> = {
 }
 
 const IMPACT_COLORS: Record<TARAEntry['impact'], string> = {
+  critical: '#ef4444',
   high: '#ef4444',
   medium: '#f59e0b',
   low: '#10b981',

@@ -8,7 +8,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { VAS6154Detector } from '@/lib/vas6154-detect'
+import { VAS6154Detector } from '@/lib/vas6154/vas6154-detect'
 
 const detector = new VAS6154Detector()
 

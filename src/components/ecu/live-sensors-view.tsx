@@ -42,6 +42,7 @@ interface SensorData {
   criticalHigh: number
   status: SensorStatus
   showGraph: boolean
+  history?: number[]
 }
 
 const initialSensors: SensorData[] = [

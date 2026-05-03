@@ -81,3 +81,24 @@ Stage Summary:
 - App running with sidebar, navbar, and all 40+ views
 - Diagnostic service running on port 8000
 - Error boundaries in place to prevent white screen crashes
+
+---
+Task ID: 4
+Agent: Sub Agent
+Task: Fix ALL TypeScript errors in ECU components and related files
+
+Work Log:
+- Fixed compliance-view.tsx: Added missing 'critical' key to IMPACT_COLORS Record (was only high/medium/low, needed critical/high/medium/low to match TARAEntry['impact'] type)
+- Fixed live-sensors-view.tsx: Added 'history?: number[]' property to SensorData interface (used on lines 379-380 but missing from type definition)
+- Fixed usb-obd-view.tsx: Changed `connectedAt: null as number | null` to `connectedAt: undefined` for both Tactrix and VAG-COM adapters (interface expects `number | undefined`, not `number | null`)
+- Fixed ota-view.tsx: Captured `selectedCampaignId` into local const `campaignId` after null guard in useEffect, so the async inner function receives a narrowed `string` type instead of `string | null`
+- Fixed flash-view.tsx: Removed redundant `flashStage !== 'idle'` check on line 369 (already inside a `{flashStage !== 'idle' && (...)}` block on line 356, so TypeScript flagged the comparison as always-true with no overlap)
+- Fixed dongle-database.ts: Added 'stable' to the status type union in both DongleModel interface and mk() function parameter (was `'supported' | 'beta' | 'deprecated'`, now `'supported' | 'stable' | 'beta' | 'deprecated'` to match actual data)
+- Fixed ai-assistant/route.ts: Changed `InstanceType<typeof ZAI>` to `Awaited<ReturnType<typeof ZAI.create>>` (ZAI is not a class constructor, InstanceType doesn't apply)
+- Fixed ai-diagnostics/route.ts: Same ZAI type fix as above
+
+Stage Summary:
+- All 8 TypeScript errors fixed across 8 files
+- tsc --noEmit confirms zero errors in the 8 target files
+- Remaining tsc errors are in unrelated files (skills/, vas6154/, web-obd-manager.ts) not part of this task
+- No existing functionality deleted or altered — only type annotations and type-safe values changed

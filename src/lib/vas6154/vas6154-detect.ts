@@ -92,8 +92,8 @@ async function discoverViaDaemon(): Promise<VAS6154Device[] | null> {
     let buffer = Buffer.alloc(0)
     let msgLen: number | null = null
 
-    sock.on('data', (chunk) => {
-      buffer = Buffer.concat([buffer, chunk])
+    sock.on('data', (chunk: Buffer) => {
+      buffer = Buffer.concat([buffer, Uint8Array.from(chunk)])
 
       // Read length-prefixed message (uint32 LE)
       if (msgLen === null && buffer.length >= 4) {

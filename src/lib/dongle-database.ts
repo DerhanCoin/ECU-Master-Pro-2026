@@ -24,7 +24,7 @@ export interface DongleModel {
   j2534Compliant: boolean
   doipSupport: boolean
   canFdSupport: boolean
-  status: 'supported' | 'beta' | 'deprecated'
+  status: 'supported' | 'stable' | 'beta' | 'deprecated'
   releaseYear: number
   description: string
 }
@@ -108,7 +108,7 @@ function mk(
   protocols: string[], driver: string, driverVer: string,
   firmware: FirmwareVersion[], brands: string[],
   j2534: boolean, doip: boolean, canfd: boolean,
-  status: 'supported' | 'beta' | 'deprecated', year: number, desc: string
+  status: 'supported' | 'stable' | 'beta' | 'deprecated', year: number, desc: string
 ): DongleModel {
   return { id, name, brand, category, subcategory, connectionTypes: conn, protocols, driverName: driver, driverVersion: driverVer, firmwareVersions: firmware, supportedBrands: brands, j2534Compliant: j2534, doipSupport: doip, canFdSupport: canfd, status, releaseYear: year, description: desc }
 }

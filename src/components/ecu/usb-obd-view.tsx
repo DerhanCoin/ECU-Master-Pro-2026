@@ -83,7 +83,7 @@ const MOCK_ADAPTERS: USBAdapter[] = [
     comPort: 'COM3',
     status: 'Connected',
     protocolSupport: ['J2534', 'CAN', 'ISO-9141'],
-    connectedAt: null as number | null,
+    connectedAt: undefined,
     dataRate: '512 B/s',
   },
   {
@@ -92,7 +92,7 @@ const MOCK_ADAPTERS: USBAdapter[] = [
     comPort: 'COM4',
     status: 'Connected',
     protocolSupport: ['VW Group', 'K-Line', 'CAN'],
-    connectedAt: null as number | null,
+    connectedAt: undefined,
     dataRate: '384 B/s',
   },
   {

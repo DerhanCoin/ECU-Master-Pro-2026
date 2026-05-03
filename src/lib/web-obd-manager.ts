@@ -86,13 +86,13 @@ function parseOBDResponse(raw: string, pid: string): number {
 
 const VIN_MANUFACTURERS: Record<string, string> = {
   'W': 'Volkswagen/Audi', '1': 'USA', 'J': 'Japan', 'K': 'Korea',
-  'Z': 'Italy', 'S': 'UK', 'W': 'Germany', '3': 'Mexico',
+  'Z': 'Italy', 'S': 'UK', '3': 'Mexico',
   '5': 'USA', 'Y': 'Sweden', 'L': 'China', 'M': 'India',
   '6': 'Australia', 'T': 'Czech', 'V': 'France',
 }
 
 export class WebOBDManager {
-  private port: SerialPort | null = null
+  private port: any = null
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null
   private _status: ConnectionStatus = {
@@ -142,7 +142,7 @@ export class WebOBDManager {
 
       this.update({ state: 'connecting', type: 'usb', baudRate })
 
-      this.port = await navigator.serial.requestPort()
+      this.port = await (navigator as any).serial.requestPort()
       await this.port.open({ baudRate })
 
       this.writer = this.port.writable?.getWriter() || null
@@ -195,7 +195,7 @@ export class WebOBDManager {
 
       this.update({ state: 'connecting', type: 'bluetooth' })
 
-      const device = await navigator.bluetooth.requestDevice({
+      const device = await (navigator as any).bluetooth.requestDevice({
         filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }],
         optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'],
       })
