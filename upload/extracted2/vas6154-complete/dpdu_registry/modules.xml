@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  D-PDU API Module Registry
+  ISO 22900-2 VCI Module Configuration
+  DERHAN AutoMatrix Pro - Linux
+
+  Ovo je ekvivalent Windows registry-a gdje ODIS traži VCI module.
+  Na Linuxu: /etc/dpdu/modules.xml
+  Aplikacija čita ovo pri startu i pronalazi vas6154 library.
+-->
+
+<PDUMODULE_REGISTRY version="2.0">
+
+  <!-- ═══════════════════════════════════════════════════════
+       VAS 6154 - Primary Entry
+       ═══════════════════════════════════════════════════════ -->
+  <MODULE>
+    <SHORT_NAME>VAS6154</SHORT_NAME>
+    <LONG_NAME>VAS 6154 Vehicle Communication Interface (DERHAN Linux Driver)</LONG_NAME>
+    <VENDOR_NAME>Softing AG / DERHAN AutoMatrix Pro</VENDOR_NAME>
+    <VENDOR_ID>0x19B2</VENDOR_ID>
+    <PRODUCT_ID>0x0008</PRODUCT_ID>
+
+    <!-- Shared library path -->
+    <LIBRARY_PATH>/usr/local/lib/libdpdu_vas6154.so</LIBRARY_PATH>
+    <LIBRARY_PATH_ALT>/usr/lib/libdpdu_vas6154.so</LIBRARY_PATH_ALT>
+
+    <!-- Device node (created by kernel module) -->
+    <DEVICE_CLASS>vas6154</DEVICE_CLASS>
+    <DEVICE_PATTERN>/dev/vas6154_*</DEVICE_PATTERN>
+    <SYSFS_PATH>/sys/class/vas6154/</SYSFS_PATH>
+
+    <!-- USB identification -->
+    <USB_VID>0x19B2</USB_VID>
+    <USB_PIDS>
+      <PID mode="operational">0x0003</PID>  <!-- v1 -->
+      <PID mode="operational">0x0008</PID>  <!-- v2 - most common -->
+      <PID mode="operational">0x000C</PID>  <!-- v3 CAN-FD -->
+      <PID mode="dfu">0x0009</PID>
+    </USB_PIDS>
+
+    <!-- Supported bus types (ISO 22900-2 Resource IDs) -->
+    <SUPPORTED_BUS_TYPES>
+      <BUS_TYPE id="0x00001000">ISO_15765_2</BUS_TYPE>   <!-- CAN / ISO-TP -->
+      <BUS_TYPE id="0x00000100">ISO_14230</BUS_TYPE>     <!-- K-Line / KWP2000 -->
+      <BUS_TYPE id="0x00000800">CAN_RAW</BUS_TYPE>       <!-- Raw CAN -->
+      <BUS_TYPE id="0x00002000">DOIP</BUS_TYPE>          <!-- DoIP ISO 13400 -->
+      <BUS_TYPE id="0x00000200">ISO_15031_5</BUS_TYPE>   <!-- OBD-II -->
+    </SUPPORTED_BUS_TYPES>
+
+    <!-- Resources (channels) -->
+    <RESOURCES>
+      <RESOURCE id="0x00000001" type="CAN">CAN_CHANNEL_0</RESOURCE>
+      <RESOURCE id="0x00000002" type="CAN">CAN_CHANNEL_1</RESOURCE>
+      <RESOURCE id="0x00000003" type="KLINE">KLINE_CHANNEL_0</RESOURCE>
+      <RESOURCE id="0x00000004" type="DOIP">DOIP_CHANNEL_0</RESOURCE>
+    </RESOURCES>
+
+    <!-- Default ComParams -->
+    <DEFAULT_COMPORTAMS>
+      <PARAM id="0x00000001" name="BAUDRATE">500000</PARAM>
+      <PARAM id="0x00001006" name="FRAME_PADDING_ACTIVATION">1</PARAM>
+      <PARAM id="0x00001007" name="FRAME_PADDING_VALUE">0xCC</PARAM>
+      <PARAM id="0x00001008" name="ADDRESSING_MODE">0</PARAM>
+    </DEFAULT_COMPORTAMS>
+
+    <!-- Module capabilities -->
+    <CAPABILITIES>
+      <CAP name="CAN_FD">auto-detect</CAP>
+      <CAP name="CAN_BAUDRATES">100000,125000,250000,500000,1000000</CAP>
+      <CAP name="CANFD_BAUDRATES">2000000,4000000,5000000,8000000</CAP>
+      <CAP name="MAX_PDU_SIZE">4096</CAP>
+    </CAPABILITIES>
+
+    <!-- Detection method -->
+    <DETECTION>
+      <METHOD>USB_HOTPLUG</METHOD>       <!-- udev triggers -->
+      <METHOD>SYSFS_SCAN</METHOD>        <!-- scan /sys/class/vas6154/ -->
+      <METHOD>DEVICE_SCAN</METHOD>       <!-- scan /dev/vas6154_* -->
+    </DETECTION>
+
+    <!-- Version info (updated at runtime from device) -->
+    <VERSION>
+      <MVCI_PART1>0x0200</MVCI_PART1>
+      <MVCI_PART2>0x0200</MVCI_PART2>
+    </VERSION>
+  </MODULE>
+
+</PDUMODULE_REGISTRY>

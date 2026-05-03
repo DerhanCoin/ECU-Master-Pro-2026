@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: dpdu_vas6154
+Description: VAS 6154 D-PDU API (ISO 22900-2) Linux Driver - DERHAN AutoMatrix Pro
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -ldpdu_vas6154
+Cflags: -I${includedir}/vas6154
+Requires: libusb-1.0

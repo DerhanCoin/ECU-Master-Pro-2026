@@ -1,0 +1,27 @@
+[Unit]
+Description=VAS 6154 VCI Detection Daemon (DERHAN AutoMatrix Pro)
+Documentation=https://derhan.org
+After=network.target udev.service
+Wants=udev.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/vas6154d
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=vas6154
+RuntimeDirectoryMode=0755
+PIDFile=/run/vas6154/vas6154d.pid
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vas6154d
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/run/vas6154 /var/log
+
+[Install]
+WantedBy=multi-user.target

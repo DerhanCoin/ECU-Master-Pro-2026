@@ -22,11 +22,12 @@ import { cn } from '@/lib/utils'
 // DIAGNOSTIC SERVICE API CLIENT
 // ═══════════════════════════════════════════════════════════════
 
-const DIAG_PORT = 8000
+const DIAG_SERVICE_PORT = 8000
 
 async function diagFetch(path: string, options?: RequestInit): Promise<any> {
-  // Use Next.js API proxy route
-  const apiPath = `/api/diag${path}`
+  // Use Caddy gateway with XTransformPort to reach diagnostic service directly
+  // e.g. diagFetch('/status') → /api/status?XTransformPort=8000 → Caddy proxies to localhost:8000/api/status
+  const apiPath = `/api${path}?XTransformPort=${DIAG_SERVICE_PORT}`
   const res = await fetch(apiPath, options)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
@@ -172,11 +173,14 @@ export default function ECUDiagnosticPage() {
   // Fetch connection status
   const fetchStatus = useCallback(async () => {
     try {
-      const result = await diagFetch('/api/status')
+      const result = await diagFetch('/status')
       if (result.success) {
         setConnectionStatus(result.data)
       }
-    } catch {}
+    } catch {
+      // Backend not running — stay in disconnected state gracefully
+      setConnectionStatus(null)
+    }
   }, [])
 
   // Connect
@@ -185,7 +189,7 @@ export default function ECUDiagnosticPage() {
     setError(null)
     addLog('Connecting to VAS 6154...', 'info')
     try {
-      const result = await diagFetch('/api/connect', { method: 'POST' })
+      const result = await diagFetch('/connect', { method: 'POST' })
       if (result.success) {
         setConnectionStatus(result.data)
         addLog(`Connected (${result.data.mode} mode)`, 'success')
@@ -207,7 +211,7 @@ export default function ECUDiagnosticPage() {
   // Disconnect
   const disconnect = useCallback(async () => {
     try {
-      await diagFetch('/api/disconnect', { method: 'POST' })
+      await diagFetch('/disconnect', { method: 'POST' })
       setConnectionStatus(null)
       setDtcCodes([])
       setLiveData([])
@@ -223,7 +227,7 @@ export default function ECUDiagnosticPage() {
     setIsScanning(true)
     addLog('Scanning for DTC codes...', 'info')
     try {
-      const result = await diagFetch('/api/dtc')
+      const result = await diagFetch('/dtc')
       if (result.success) {
         setDtcCodes(result.data)
         addLog(`Found ${result.data.length} DTC codes`, result.data.length > 0 ? 'warning' : 'success')
@@ -241,7 +245,7 @@ export default function ECUDiagnosticPage() {
   const clearDTCs = useCallback(async () => {
     if (!connectionStatus?.connected) return
     try {
-      const result = await diagFetch('/api/dtc', { method: 'DELETE' })
+      const result = await diagFetch('/dtc', { method: 'DELETE' })
       if (result.success) {
         setDtcCodes([])
         addLog('All DTC codes cleared', 'success')
@@ -255,7 +259,7 @@ export default function ECUDiagnosticPage() {
   const fetchLiveData = useCallback(async () => {
     if (!connectionStatus?.connected) return
     try {
-      const result = await diagFetch('/api/live-data')
+      const result = await diagFetch('/live-data')
       if (result.success) {
         setLiveData(result.data)
       }
@@ -281,7 +285,7 @@ export default function ECUDiagnosticPage() {
   const fetchECUInfo = useCallback(async () => {
     if (!connectionStatus?.connected) return
     try {
-      const result = await diagFetch('/api/ecu/info')
+      const result = await diagFetch('/ecu/info')
       if (result.success) {
         setEcuInfo(result.data)
         addLog('ECU information read', 'success')
@@ -292,11 +296,13 @@ export default function ECUDiagnosticPage() {
   // Fetch dongle info
   const fetchDongleInfo = useCallback(async () => {
     try {
-      const result = await diagFetch('/api/dongle/info')
+      const result = await diagFetch('/dongle/info')
       if (result.success) {
         setDongleInfo(result.data)
       }
-    } catch {}
+    } catch {
+      // Backend not reachable — ignore gracefully
+    }
   }, [])
 
   // Toggle session
@@ -304,7 +310,7 @@ export default function ECUDiagnosticPage() {
     if (!connectionStatus?.connected) return
     try {
       const action = sessionActive ? 'stop' : 'start'
-      const result = await diagFetch('/api/session', {
+      const result = await diagFetch('/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, type: 'extended' }),
@@ -320,7 +326,7 @@ export default function ECUDiagnosticPage() {
   const sendTesterPresent = useCallback(async () => {
     if (!connectionStatus?.connected) return
     try {
-      await diagFetch('/api/tester-present', { method: 'POST' })
+      await diagFetch('/tester-present', { method: 'POST' })
       addLog('Tester Present sent', 'info')
     } catch {}
   }, [connectionStatus?.connected, addLog])
