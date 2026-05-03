@@ -167,7 +167,7 @@ export function ECUSidebar() {
         {/* Logo */}
         <div className="flex items-center gap-2 px-3 py-3 border-b border-[#1e2a3a]">
           <div className="flex-shrink-0 w-8 h-8 relative">
-            <Image src="/ecu-logo.png" alt="ECU Master" fill className="object-contain" />
+            <Image src="/ecu-logo.png" alt="ECU Master" fill sizes="32px" className="object-contain" />
           </div>
           {(!sidebarCollapsed || sidebarMobileOpen) && (
             <div className="flex flex-col flex-1 min-w-0">

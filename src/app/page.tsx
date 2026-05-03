@@ -1,93 +1,107 @@
 'use client'
 
+import React, { lazy, Suspense } from 'react'
 import { ECUSidebar } from '@/components/ecu/sidebar'
 import { TopNavbar } from '@/components/ecu/top-navbar'
 import { ConnectDeviceModal } from '@/components/ecu/connect-device-modal'
 import { AiAssistantPanel } from '@/components/ecu/ai-assistant-panel'
 import { CommandPalette } from '@/components/ecu/command-palette'
+import { ErrorBoundary } from '@/components/ecu/error-boundary'
 import { useAppStore } from '@/stores/app-store'
 
-// Overview
-import { DashboardView } from '@/components/ecu/dashboard-view'
-import { FleetView } from '@/components/ecu/fleet-view'
-import { OEMScanView } from '@/components/ecu/oem-scan-view'
-import { AIPredictiveView } from '@/components/ecu/ai-predictive-view'
-import { AutoConnectView } from '@/components/ecu/auto-connect-view'
-import { RealtimeView } from '@/components/ecu/realtime-view'
+// Loading skeleton for views
+function ViewSkeleton() {
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="p-6 space-y-6 animate-pulse">
+        <div className="h-8 bg-[#1e2a3a] rounded w-48" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 bg-[#1e2a3a] rounded" />
+          <div className="h-24 bg-[#1e2a3a] rounded" />
+          <div className="h-24 bg-[#1e2a3a] rounded" />
+          <div className="h-24 bg-[#1e2a3a] rounded" />
+        </div>
+        <div className="h-64 bg-[#1e2a3a] rounded" />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-48 bg-[#1e2a3a] rounded" />
+          <div className="h-48 bg-[#1e2a3a] rounded" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
-// Connection
-import { RemoteDiagView } from '@/components/ecu/remote-diag-view'
-import { UsbObdView } from '@/components/ecu/usb-obd-view'
-import { WebDiagView } from '@/components/ecu/web-diag-view'
-import { VAS6154View } from '@/components/ecu/vas6154-view'
-import { DonglesView } from '@/components/ecu/dongles-view'
+// Lazy-load all views to reduce initial bundle size and memory usage
+const DashboardView = lazy(() => import('@/components/ecu/dashboard-view').then(m => ({ default: m.DashboardView })))
+const FleetView = lazy(() => import('@/components/ecu/fleet-view').then(m => ({ default: m.FleetView })))
+const OEMScanView = lazy(() => import('@/components/ecu/oem-scan-view').then(m => ({ default: m.OEMScanView })))
+const AIPredictiveView = lazy(() => import('@/components/ecu/ai-predictive-view').then(m => ({ default: m.AIPredictiveView })))
+const AutoConnectView = lazy(() => import('@/components/ecu/auto-connect-view').then(m => ({ default: m.AutoConnectView })))
+const RealtimeView = lazy(() => import('@/components/ecu/realtime-view').then(m => ({ default: m.RealtimeView })))
 
-// Diagnostics
-import { DiagnosticsView } from '@/components/ecu/diagnostics-view'
-import { ProDiagnosticsView } from '@/components/ecu/pro-diagnostics-view'
-import { AIDiagnosticsView } from '@/components/ecu/ai-diagnostics-view'
-import { DTCToolView } from '@/components/ecu/dtc-tool-view'
-import { ADASView } from '@/components/ecu/adas-view'
-import { VINDetectView } from '@/components/ecu/vin-detect-view'
-import { LiveSensorsView } from '@/components/ecu/live-sensors-view'
+const RemoteDiagView = lazy(() => import('@/components/ecu/remote-diag-view').then(m => ({ default: m.RemoteDiagView })))
+const UsbObdView = lazy(() => import('@/components/ecu/usb-obd-view').then(m => ({ default: m.UsbObdView })))
+const WebDiagView = lazy(() => import('@/components/ecu/web-diag-view').then(m => ({ default: m.WebDiagView })))
+const VAS6154View = lazy(() => import('@/components/ecu/vas6154-view').then(m => ({ default: m.VAS6154View })))
+const DonglesView = lazy(() => import('@/components/ecu/dongles-view').then(m => ({ default: m.DonglesView })))
 
-// Performance & Tuning
-import { PerformanceView } from '@/components/ecu/performance-view'
-import { CANBusView } from '@/components/ecu/canbus-view'
-import { TuningView } from '@/components/ecu/tuning-view'
-import { MapEditorView } from '@/components/ecu/map-editor-view'
-import { DataLoggerView } from '@/components/ecu/data-logger-view'
+const DiagnosticsView = lazy(() => import('@/components/ecu/diagnostics-view').then(m => ({ default: m.DiagnosticsView })))
+const ProDiagnosticsView = lazy(() => import('@/components/ecu/pro-diagnostics-view').then(m => ({ default: m.ProDiagnosticsView })))
+const AIDiagnosticsView = lazy(() => import('@/components/ecu/ai-diagnostics-view').then(m => ({ default: m.AIDiagnosticsView })))
+const DTCToolView = lazy(() => import('@/components/ecu/dtc-tool-view').then(m => ({ default: m.DTCToolView })))
+const ADASView = lazy(() => import('@/components/ecu/adas-view').then(m => ({ default: m.ADASView })))
+const VINDetectView = lazy(() => import('@/components/ecu/vin-detect-view').then(m => ({ default: m.VINDetectView })))
+const LiveSensorsView = lazy(() => import('@/components/ecu/live-sensors-view').then(m => ({ default: m.LiveSensorsView })))
 
-// ECU & Flash
-import { FlashView } from '@/components/ecu/flash-view'
-import { ECUInfoView } from '@/components/ecu/ecu-view'
-import { AdvancedECUView } from '@/components/ecu/advanced-ecu-view'
-import { AdvancedView } from '@/components/ecu/advanced-view'
-import { FlashVerifyView } from '@/components/ecu/flash-verify-view'
+const PerformanceView = lazy(() => import('@/components/ecu/performance-view').then(m => ({ default: m.PerformanceView })))
+const CANBusView = lazy(() => import('@/components/ecu/canbus-view').then(m => ({ default: m.CANBusView })))
+const TuningView = lazy(() => import('@/components/ecu/tuning-view').then(m => ({ default: m.TuningView })))
+const MapEditorView = lazy(() => import('@/components/ecu/map-editor-view').then(m => ({ default: m.MapEditorView })))
+const DataLoggerView = lazy(() => import('@/components/ecu/data-logger-view').then(m => ({ default: m.DataLoggerView })))
 
-// Transmission & Protocols
-import { TransmissionView } from '@/components/ecu/transmission-view'
-import { TransmissionControlView } from '@/components/ecu/transmission-control-view'
-import { SGWView } from '@/components/ecu/sgw-view'
-import { J2534View } from '@/components/ecu/j2534-view'
-import { DoIPView } from '@/components/ecu/doip-view'
-import { PassthruView } from '@/components/ecu/passthru-view'
+const FlashView = lazy(() => import('@/components/ecu/flash-view').then(m => ({ default: m.FlashView })))
+const ECUInfoView = lazy(() => import('@/components/ecu/ecu-view').then(m => ({ default: m.ECUInfoView })))
+const AdvancedECUView = lazy(() => import('@/components/ecu/advanced-ecu-view').then(m => ({ default: m.AdvancedECUView })))
+const AdvancedView = lazy(() => import('@/components/ecu/advanced-view').then(m => ({ default: m.AdvancedView })))
+const FlashVerifyView = lazy(() => import('@/components/ecu/flash-verify-view').then(m => ({ default: m.FlashVerifyView })))
 
-// Network & EV
-import { NetworkAnalysisView } from '@/components/ecu/network-analysis-view'
-import { EVHybridView } from '@/components/ecu/ev-hybrid-view'
+const TransmissionView = lazy(() => import('@/components/ecu/transmission-view').then(m => ({ default: m.TransmissionView })))
+const TransmissionControlView = lazy(() => import('@/components/ecu/transmission-control-view').then(m => ({ default: m.TransmissionControlView })))
+const SGWView = lazy(() => import('@/components/ecu/sgw-view').then(m => ({ default: m.SGWView })))
+const J2534View = lazy(() => import('@/components/ecu/j2534-view').then(m => ({ default: m.J2534View })))
+const DoIPView = lazy(() => import('@/components/ecu/doip-view').then(m => ({ default: m.DoIPView })))
+const PassthruView = lazy(() => import('@/components/ecu/passthru-view').then(m => ({ default: m.PassthruView })))
 
-// Tools & Data
-import { ToolsView } from '@/components/ecu/tools-view'
-import { SensorStreamView } from '@/components/ecu/sensor-stream-view'
-import { VehicleDatabaseView } from '@/components/ecu/vehicle-database-view'
-import { ReportsView } from '@/components/ecu/reports-view'
-import { TSBView } from '@/components/ecu/tsb-view'
-import { CloudSyncView } from '@/components/ecu/cloud-sync-view'
+const NetworkAnalysisView = lazy(() => import('@/components/ecu/network-analysis-view').then(m => ({ default: m.NetworkAnalysisView })))
+const EVHybridView = lazy(() => import('@/components/ecu/ev-hybrid-view').then(m => ({ default: m.EVHybridView })))
 
-// Insights
-import { Topology3DView } from '@/components/ecu/topology-3d-view'
-import { TrendsView } from '@/components/ecu/trends-view'
-import { ServiceView } from '@/components/ecu/service-view'
-import { ServiceHistoryView } from '@/components/ecu/service-history-view'
+const ToolsView = lazy(() => import('@/components/ecu/tools-view').then(m => ({ default: m.ToolsView })))
+const SensorStreamView = lazy(() => import('@/components/ecu/sensor-stream-view').then(m => ({ default: m.SensorStreamView })))
+const VehicleDatabaseView = lazy(() => import('@/components/ecu/vehicle-database-view').then(m => ({ default: m.VehicleDatabaseView })))
+const ReportsView = lazy(() => import('@/components/ecu/reports-view').then(m => ({ default: m.ReportsView })))
+const TSBView = lazy(() => import('@/components/ecu/tsb-view').then(m => ({ default: m.TSBView })))
+const CloudSyncView = lazy(() => import('@/components/ecu/cloud-sync-view').then(m => ({ default: m.CloudSyncView })))
 
-// SDV & Next-Gen
-import { SOVDView } from '@/components/ecu/sovd-view'
-import { OTAView } from '@/components/ecu/ota-view'
-import { DigitalTwinView } from '@/components/ecu/digital-twin-view'
-import { IdpsView } from '@/components/ecu/idps-view'
-import { V2XView } from '@/components/ecu/v2x-view'
-import { SBOMView } from '@/components/ecu/sbom-view'
-import { ComplianceView } from '@/components/ecu/compliance-view'
+const Topology3DView = lazy(() => import('@/components/ecu/topology-3d-view').then(m => ({ default: m.Topology3DView })))
+const TrendsView = lazy(() => import('@/components/ecu/trends-view').then(m => ({ default: m.TrendsView })))
+const ServiceView = lazy(() => import('@/components/ecu/service-view').then(m => ({ default: m.ServiceView })))
+const ServiceHistoryView = lazy(() => import('@/components/ecu/service-history-view').then(m => ({ default: m.ServiceHistoryView })))
 
-// Business
-import { TrainingView } from '@/components/ecu/training-view'
-import { ShopView } from '@/components/ecu/shop-view'
-import { PartsView } from '@/components/ecu/parts-view'
-import { WorkshopView } from '@/components/ecu/workshop-view'
-import { WorkshopPortalView } from '@/components/ecu/workshop-portal-view'
-import { AdminView } from '@/components/ecu/admin-view'
-import { LicenseView } from '@/components/ecu/license-view'
+const SOVDView = lazy(() => import('@/components/ecu/sovd-view').then(m => ({ default: m.SOVDView })))
+const OTAView = lazy(() => import('@/components/ecu/ota-view').then(m => ({ default: m.OTAView })))
+const DigitalTwinView = lazy(() => import('@/components/ecu/digital-twin-view').then(m => ({ default: m.DigitalTwinView })))
+const IdpsView = lazy(() => import('@/components/ecu/idps-view').then(m => ({ default: m.IdpsView })))
+const V2XView = lazy(() => import('@/components/ecu/v2x-view').then(m => ({ default: m.V2XView })))
+const SBOMView = lazy(() => import('@/components/ecu/sbom-view').then(m => ({ default: m.SBOMView })))
+const ComplianceView = lazy(() => import('@/components/ecu/compliance-view').then(m => ({ default: m.ComplianceView })))
+
+const TrainingView = lazy(() => import('@/components/ecu/training-view').then(m => ({ default: m.TrainingView })))
+const ShopView = lazy(() => import('@/components/ecu/shop-view').then(m => ({ default: m.ShopView })))
+const PartsView = lazy(() => import('@/components/ecu/parts-view').then(m => ({ default: m.PartsView })))
+const WorkshopView = lazy(() => import('@/components/ecu/workshop-view').then(m => ({ default: m.WorkshopView })))
+const WorkshopPortalView = lazy(() => import('@/components/ecu/workshop-portal-view').then(m => ({ default: m.WorkshopPortalView })))
+const AdminView = lazy(() => import('@/components/ecu/admin-view').then(m => ({ default: m.AdminView })))
+const LicenseView = lazy(() => import('@/components/ecu/license-view').then(m => ({ default: m.LicenseView })))
 
 export default function Home() {
   const { activeView } = useAppStore()
@@ -181,31 +195,37 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-[#0f1923] overflow-hidden">
-      {/* Sidebar */}
-      <ECUSidebar />
+    <ErrorBoundary>
+      <div className="flex h-screen bg-[#0f1923] overflow-hidden">
+        {/* Sidebar */}
+        <ECUSidebar />
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top navbar */}
-        <TopNavbar />
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Top navbar */}
+          <TopNavbar />
 
-        {/* View content */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#0f1923]" key={activeView}>
-          <div className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-200">
-            {renderView()}
-          </div>
-        </main>
+          {/* View content */}
+          <main className="flex-1 flex flex-col overflow-hidden bg-[#0f1923]" key={activeView}>
+            <div className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-200">
+              <ErrorBoundary>
+                <Suspense fallback={<ViewSkeleton />}>
+                  {renderView()}
+                </Suspense>
+              </ErrorBoundary>
+            </div>
+          </main>
+        </div>
+
+        {/* Connect device modal */}
+        <ConnectDeviceModal />
+
+        {/* AI Assistant floating chat */}
+        <AiAssistantPanel />
+
+        {/* Command Palette (Cmd+K) */}
+        <CommandPalette />
       </div>
-
-      {/* Connect device modal */}
-      <ConnectDeviceModal />
-
-      {/* AI Assistant floating chat */}
-      <AiAssistantPanel />
-
-      {/* Command Palette (Cmd+K) */}
-      <CommandPalette />
-    </div>
+    </ErrorBoundary>
   )
 }

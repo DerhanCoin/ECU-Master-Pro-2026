@@ -58,7 +58,7 @@ export function TopNavbar() {
 
         <div className="hidden sm:flex items-center gap-2">
           <div className="w-6 h-6 relative">
-            <Image src="/ecu-logo.png" alt="ECU" fill className="object-contain" />
+            <Image src="/ecu-logo.png" alt="ECU" fill sizes="24px" className="object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-[#e2e8f0] leading-none">ECU Master Pro</span>
