@@ -174,12 +174,17 @@ export function OTAView() {
     try {
       const updated = await otaManager.rollbackCampaign(id)
       setCampaigns(prev => prev.map(c => c.id === id ? updated : c))
-      await loadVehicleStatuses()
+      // Refresh vehicle statuses after rollback
+      const currentId = selectedCampaignId
+      if (currentId) {
+        const statuses = await otaManager.getVehicleStatuses(currentId)
+        setVehicleStatuses(statuses)
+      }
     } catch {
       // Silently handle
     }
     setActionLoading(null)
-  }, [loadVehicleStatuses])
+  }, [selectedCampaignId])
 
   // ── Computed Stats ───────────────────────────────────────────────────────
 

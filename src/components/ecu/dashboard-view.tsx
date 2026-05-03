@@ -434,7 +434,7 @@ export function DashboardView() {
                     Catalytic converter efficiency declining - 72% probability
                   </p>
                   <button
-                    onClick={() => setActiveView('ai-diagnostics')}
+                    onClick={() => setActiveView('ai')}
                     className="flex items-center gap-1 text-[10px] text-[#8b5cf6] hover:text-[#a78bfa] transition-colors"
                   >
                     View Details <ArrowRight className="h-3 w-3" />
@@ -455,7 +455,7 @@ export function DashboardView() {
                     Unusual vibration pattern detected at 2,400 RPM
                   </p>
                   <button
-                    onClick={() => setActiveView('ai-diagnostics')}
+                    onClick={() => setActiveView('ai')}
                     className="flex items-center gap-1 text-[10px] text-[#f59e0b] hover:text-[#fbbf24] transition-colors"
                   >
                     View Details <ArrowRight className="h-3 w-3" />
@@ -476,7 +476,7 @@ export function DashboardView() {
                     Battery voltage declining 0.1V/month - monitor recommended
                   </p>
                   <button
-                    onClick={() => setActiveView('ai-diagnostics')}
+                    onClick={() => setActiveView('ai')}
                     className="flex items-center gap-1 text-[10px] text-[#00d4ff] hover:text-[#00bcd4] transition-colors"
                   >
                     View Details <ArrowRight className="h-3 w-3" />
@@ -576,12 +576,12 @@ export function DashboardView() {
             </h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'Full Scan', icon: Activity, color: '#00d4ff', view: 'dtc-scan' as const },
-                { label: 'DTC Check', icon: AlertTriangle, color: '#f59e0b', view: 'dtc-scan' as const },
-                { label: 'Live Data', icon: Gauge, color: '#10b981', view: 'live-data' as const },
-                { label: 'ECU Info', icon: Cpu, color: '#8b5cf6', view: 'performance' as const },
-                { label: 'AI Analysis', icon: Zap, color: '#8b5cf6', view: 'ai-diagnostics' as const },
-                { label: 'CAN Bus', icon: BusFront, color: '#00d4ff', view: 'canbus' as const },
+                { label: 'Full Scan', icon: Activity, color: '#00d4ff', view: 'dtc-tool' as const },
+                { label: 'DTC Check', icon: AlertTriangle, color: '#f59e0b', view: 'dtc-tool' as const },
+                { label: 'Live Data', icon: Gauge, color: '#10b981', view: 'live-sensors' as const },
+                { label: 'ECU Info', icon: Cpu, color: '#8b5cf6', view: 'ecu' as const },
+                { label: 'AI Analysis', icon: Zap, color: '#8b5cf6', view: 'ai' as const },
+                { label: 'CAN Bus', icon: BusFront, color: '#00d4ff', view: 'can' as const },
               ].map((action, i) => {
                 const Icon = action.icon
                 return (
@@ -611,7 +611,7 @@ export function DashboardView() {
               </span>
             </h3>
             <button
-              onClick={() => setActiveView('live-data')}
+              onClick={() => setActiveView('live-sensors')}
               className="flex items-center gap-1 text-[10px] text-[#00d4ff] hover:text-[#00bcd4] transition-colors"
             >
               View All <ArrowRight className="h-3 w-3" />
@@ -811,7 +811,7 @@ export function DashboardView() {
               })}
             </div>
             <button
-              onClick={() => setActiveView('ai-diagnostics')}
+              onClick={() => setActiveView('ai')}
               className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-[11px] text-[#8b5cf6] hover:bg-[#8b5cf6]/20 transition-all"
             >
               <Zap className="h-3 w-3" />

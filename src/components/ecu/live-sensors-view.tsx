@@ -247,7 +247,7 @@ export function LiveSensorsView() {
         <div className="flex items-center gap-2 px-3 py-2 bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-lg">
           <div className="h-2 w-2 rounded-full bg-[#ef4444] animate-pulse" />
           <span className="text-xs text-[#ef4444] font-semibold">Recording in progress...</span>
-          <span className="text-[10px] text-[#64748b] ml-auto">{new Date().toLocaleTimeString()}</span>
+          <span className="text-[10px] text-[#64748b] ml-auto" suppressHydrationWarning>{new Date().toLocaleTimeString()}</span>
         </div>
       )}
 
@@ -370,13 +370,17 @@ export function LiveSensorsView() {
                 {/* Mini graph placeholder */}
                 {sensor.showGraph && (
                   <div className="h-16 bg-[#0a0f18] border border-[#1e2a3a] rounded-md overflow-hidden relative">
-                    <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+                    <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none" suppressHydrationWarning>
                       {(() => {
                         const points: string[] = []
                         for (let i = 0; i < 20; i++) {
                           const x = (i / 19) * 100
-                          const y = 20 + (Math.sin(i * 0.8 + Date.now() * 0.001) * 8) + (Math.random() * 4)
-                          points.push(`${x},${Math.max(2, Math.min(38, y))}`)
+                          // Use deterministic values based on sensor data (no Date.now/Math.random in render)
+                          const baseY = sensor.history && sensor.history.length > 0
+                            ? 20 + ((sensor.history[i % sensor.history.length] ?? sensor.value) - sensor.min) / (sensor.max - sensor.min + 0.001) * 20 - 10
+                            : 20 + Math.sin(i * 0.8) * 8
+                          const y = Math.max(2, Math.min(38, baseY))
+                          points.push(`${x},${y}`)
                         }
                         return (
                           <polyline

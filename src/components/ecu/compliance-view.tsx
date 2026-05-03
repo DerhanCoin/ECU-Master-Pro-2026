@@ -48,7 +48,7 @@ interface TARAEntry {
   id: string
   asset: string
   threat: string
-  impact: 'high' | 'medium' | 'low'
+  impact: 'critical' | 'high' | 'medium' | 'low'
   likelihood: 'high' | 'medium' | 'low'
   risk_level: 'critical' | 'high' | 'medium' | 'low'
   mitigation: string

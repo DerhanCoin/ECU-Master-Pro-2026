@@ -31,7 +31,7 @@ interface Job {
   id: string
   vehicle: string
   customer: string
-  technician: string
+  technician: string | null
   service: string
   status: JobStatus
   estimatedTime: string
