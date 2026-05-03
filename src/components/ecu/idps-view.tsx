@@ -451,7 +451,7 @@ export function IdpsView() {
                                 {alert.description}
                               </p>
                               <div className="flex items-center gap-3 text-[9px] text-[#475569]">
-                                <span className="flex items-center gap-1" suppressHydrationWarning>
+                                <span className="flex items-center gap-1">
                                   <Clock className="h-2.5 w-2.5" />
                                   {timeAgo(alert.timestamp)}
                                 </span>

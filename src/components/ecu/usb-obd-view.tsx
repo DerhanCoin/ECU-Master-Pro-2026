@@ -75,8 +75,7 @@ interface ChangelogEntry {
   changes: string[]
 }
 
-// Mock data - use fixed epoch for SSR stability
-const STABLE_EPOCH = 1741200000000 // Fixed reference point
+// Mock data
 const MOCK_ADAPTERS: USBAdapter[] = [
   {
     id: 'tactrix',
@@ -84,7 +83,7 @@ const MOCK_ADAPTERS: USBAdapter[] = [
     comPort: 'COM3',
     status: 'Connected',
     protocolSupport: ['J2534', 'CAN', 'ISO-9141'],
-    connectedAt: STABLE_EPOCH - 1000 * 60 * 47,
+    connectedAt: null as number | null,
     dataRate: '512 B/s',
   },
   {
@@ -93,7 +92,7 @@ const MOCK_ADAPTERS: USBAdapter[] = [
     comPort: 'COM4',
     status: 'Connected',
     protocolSupport: ['VW Group', 'K-Line', 'CAN'],
-    connectedAt: STABLE_EPOCH - 1000 * 60 * 23,
+    connectedAt: null as number | null,
     dataRate: '384 B/s',
   },
   {
@@ -494,7 +493,7 @@ export function UsbObdView() {
                           <Clock className="h-3 w-3 text-[#00d4ff]" />
                           <span className="text-[10px] text-[#64748b]">Duration:</span>
                           <span className="text-[10px] font-semibold text-[#00d4ff] tabular-nums">
-                            {adapter.connectedAt ? formatUptime(uptimeMs) : '--:--:--'}
+                            {adapter.connectedAt ? formatUptime(Date.now() - adapter.connectedAt) : '--:--:--'}
                           </span>
                         </div>
                       </div>

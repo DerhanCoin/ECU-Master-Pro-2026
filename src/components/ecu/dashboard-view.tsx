@@ -34,7 +34,7 @@ import {
   Unplug,
   Wrench,
 } from 'lucide-react'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // Types for live engine parameters
 interface ParamState {
@@ -120,22 +120,18 @@ export function DashboardView() {
   const [serviceStats, setServiceStats] = useState<ServiceStats | null>(null)
   const [apiLoading, setApiLoading] = useState(true)
   const [isLive, setIsLive] = useState(false)
-  const [diagSource, setDiagSource] = useState<'real' | 'simulation' | 'offline'>('offline')
-  const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Fetch dashboard data from APIs on mount
+  // Fetch dashboard data from API on mount
   useEffect(() => {
     let cancelled = false
 
     async function fetchDashboardData() {
       setApiLoading(true)
       try {
-        // Fetch from local Next.js APIs + diagnostic backend in parallel
-        const [vehiclesRes, dtcRes, serviceRes, liveDataRes] = await Promise.allSettled([
+        const [vehiclesRes, dtcRes, serviceRes] = await Promise.allSettled([
           fetch('/api/vehicles'),
           fetch('/api/dtc-codes'),
           fetch('/api/service-records'),
-          fetch('/api/live-data?XTransformPort=8000'),
         ])
 
         if (cancelled) return
@@ -188,37 +184,9 @@ export function DashboardView() {
           }
         }
 
-        // Process live diagnostic data from backend
-        if (liveDataRes.status === 'fulfilled' && liveDataRes.value.ok) {
-          const data = await liveDataRes.value.json()
-          if (data.success && data.data?.sensors) {
-            const sensors = data.data.sensors as Array<{ pid: string; name: string; value: number; unit: string }>
-            setDiagSource(data.data.source ?? 'simulation')
-            // Map sensor data to engine params
-            setEngineParams(prev => prev.map(param => {
-              const sensorMap: Record<string, string> = {
-                'RPM': '0C', 'Speed': '0D', 'Coolant': '05',
-                'Battery': '42', 'Throttle': '11', 'Boost': '0B',
-              }
-              const pid = sensorMap[param.label]
-              const sensor = pid ? sensors.find(s => s.pid === pid) : null
-              if (sensor) {
-                const newValue = sensor.value
-                const newHistory = [...param.history.slice(1), newValue]
-                const prevValue = param.history[param.history.length - 2] ?? param.value
-                const trend: 'up' | 'down' | 'stable' = newValue > prevValue + param.fluctuation * 0.3
-                  ? 'up' : newValue < prevValue - param.fluctuation * 0.3 ? 'down' : 'stable'
-                const percent = ((newValue - param.min) / (param.max - param.min)) * 100
-                return { ...param, value: newValue, history: newHistory, trend, percent }
-              }
-              return param
-            }))
-            anySuccess = true
-          }
-        }
-
         setIsLive(anySuccess)
       } catch {
+        // Fallback - use default values
         setIsLive(false)
       } finally {
         if (!cancelled) {
@@ -242,86 +210,29 @@ export function DashboardView() {
     return () => clearInterval(interval)
   }, [])
 
-  // Live engine parameter updates — fetch from diagnostic backend or simulate
+  // Simulate live engine parameter fluctuations
   useEffect(() => {
-    if (isConnected && diagSource !== 'offline') {
-      // Real/simulated data from backend — poll every 2s
-      liveIntervalRef.current = setInterval(async () => {
-        try {
-          const res = await fetch('/api/live-data?XTransformPort=8000')
-          const data = await res.json()
-          if (data.success && data.data?.sensors) {
-            const sensors = data.data.sensors as Array<{ pid: string; name: string; value: number; unit: string }>
-            setEngineParams(prev => prev.map(param => {
-              const sensorMap: Record<string, string> = {
-                'RPM': '0C', 'Speed': '0D', 'Coolant': '05',
-                'Battery': '42', 'Throttle': '11', 'Boost': '0B',
-              }
-              const pid = sensorMap[param.label]
-              const sensor = pid ? sensors.find(s => s.pid === pid) : null
-              if (sensor) {
-                const newValue = sensor.value
-                const newHistory = [...param.history.slice(1), newValue]
-                const prevValue = param.history[param.history.length - 2] ?? param.value
-                const trend: 'up' | 'down' | 'stable' = newValue > prevValue + param.fluctuation * 0.3
-                  ? 'up' : newValue < prevValue - param.fluctuation * 0.3 ? 'down' : 'stable'
-                const percent = ((newValue - param.min) / (param.max - param.min)) * 100
-                return { ...param, value: newValue, history: newHistory, trend, percent }
-              }
-              return param
-            }))
-          }
-        } catch {
-          // Backend unreachable — keep existing values
-        }
-      }, 2000)
-    } else {
-      // Simulation mode — local fluctuation
-      liveIntervalRef.current = setInterval(() => {
-        setEngineParams(prev => prev.map(param => {
-          const delta = (Math.random() * 2 - 1) * param.fluctuation
-          const newValue = Math.max(param.min, Math.min(param.max, param.value + delta))
-          const newHistory = [...param.history.slice(1), newValue]
-          const prevValue = param.history[param.history.length - 2] ?? param.value
-          const trend: 'up' | 'down' | 'stable' = newValue > prevValue + param.fluctuation * 0.3
-            ? 'up'
-            : newValue < prevValue - param.fluctuation * 0.3
-              ? 'down'
-              : 'stable'
-          const percent = ((newValue - param.min) / (param.max - param.min)) * 100
-          return { ...param, value: newValue, history: newHistory, trend, percent }
-        }))
-      }, 2000)
-    }
-    return () => { if (liveIntervalRef.current) clearInterval(liveIntervalRef.current) }
-  }, [isConnected, diagSource])
+    const interval = setInterval(() => {
+      setEngineParams(prev => prev.map(param => {
+        const delta = (Math.random() * 2 - 1) * param.fluctuation
+        const newValue = Math.max(param.min, Math.min(param.max, param.value + delta))
+        const newHistory = [...param.history.slice(1), newValue]
+        const prevValue = param.history[param.history.length - 2] ?? param.value
+        const trend: 'up' | 'down' | 'stable' = newValue > prevValue + param.fluctuation * 0.3
+          ? 'up'
+          : newValue < prevValue - param.fluctuation * 0.3
+            ? 'down'
+            : 'stable'
+        const percent = ((newValue - param.min) / (param.max - param.min)) * 100
+        return { ...param, value: newValue, history: newHistory, trend, percent }
+      }))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
-  const handleQuickScan = async () => {
+  const handleQuickScan = () => {
     setScanning(true)
     setScanProgress(0)
-    try {
-      // Try to scan via diagnostic backend
-      const res = await fetch('/api/scan?XTransformPort=8000', { method: 'POST' })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success && data.data) {
-          // Update health score from scan result
-          if (data.data.healthScore) setHealthScore(data.data.healthScore)
-          // Update DTCs from scan
-          if (data.data.dtcs?.length >= 0) {
-            setDtcStats({
-              total: data.data.dtcs.length,
-              critical: data.data.dtcs.filter((d: { severity: string }) => d.severity === 'critical').length,
-              warnings: data.data.dtcs.filter((d: { severity: string }) => d.severity === 'warning').length,
-              active: data.data.dtcs.filter((d: { status: string }) => d.status === 'Active').length,
-            })
-          }
-        }
-      }
-    } catch {
-      // Backend unreachable
-    }
-    // Simulate progress animation regardless
     const interval = setInterval(() => {
       setScanProgress(prev => {
         if (prev >= 100) {
@@ -329,9 +240,9 @@ export function DashboardView() {
           setScanning(false)
           return 100
         }
-        return prev + Math.random() * 15 + 5
+        return prev + Math.random() * 12 + 3
       })
-    }, 200)
+    }, 300)
   }
 
   const handleDisconnect = useCallback(() => {

@@ -103,19 +103,6 @@ function getCategoryIcon(cat: SensorCategory) {
   }
 }
 
-// Recording timer that only renders on client to avoid SSR mismatch
-function RecordingTimer() {
-  const [time, setTime] = useState('')
-  useEffect(() => {
-    const update = () => setTime(new Date().toLocaleTimeString())
-    update() // Initial set via callback, not directly in effect body
-    const interval = setInterval(update, 1000)
-    return () => clearInterval(interval)
-  }, [])
-  if (!time) return null
-  return <span className="text-[10px] text-[#64748b] ml-auto">{time}</span>
-}
-
 export function LiveSensorsView() {
   const [sensors, setSensors] = useState<SensorData[]>(initialSensors)
   const [isStreaming, setIsStreaming] = useState(false)
@@ -260,7 +247,7 @@ export function LiveSensorsView() {
         <div className="flex items-center gap-2 px-3 py-2 bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-lg">
           <div className="h-2 w-2 rounded-full bg-[#ef4444] animate-pulse" />
           <span className="text-xs text-[#ef4444] font-semibold">Recording in progress...</span>
-          <RecordingTimer />
+          <span className="text-[10px] text-[#64748b] ml-auto" suppressHydrationWarning>{new Date().toLocaleTimeString()}</span>
         </div>
       )}
 
